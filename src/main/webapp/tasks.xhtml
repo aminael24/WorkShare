@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+
+<h:head>
+    <title>Tasks - WorkShare</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+
+<h:body>
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h:graphicImage library="images" name="logo.png" styleClass="sidebar-logo"/>
+                <span>WorkShare</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="dashboard.xhtml" class="sidebar-link">Dashboard</a>
+                <a href="projects.xhtml" class="sidebar-link">Projects</a>
+                <a href="tasks.xhtml" class="sidebar-link active">Tasks</a>
+                <h:commandLink value="Logout" action="#{authBean.logout}" styleClass="sidebar-link"/>
+            </nav>
+        </aside>
+
+        <div class="main-panel">
+            <header class="topbar">
+                <div class="topbar-title">Mes tâches</div>
+            </header>
+
+            <main class="dashboard-content">
+                <h:messages globalOnly="true" styleClass="global-messages"/>
+
+                <div class="content-grid-2">
+                    <section class="panel-card">
+                        <div class="panel-header">
+                            <h2>Créer une tâche</h2>
+                        </div>
+
+                        <h:form>
+                            <div class="form-group">
+                                <label>Projet</label>
+                                <h:selectOneMenu value="#{taskBean.projectId}" styleClass="popup-input">
+                                    <f:selectItem itemLabel="Choisir un projet" itemValue="#{null}"/>
+                                    <f:selectItems value="#{taskBean.myProjects}" var="p"
+                                                   itemLabel="#{p.titre}" itemValue="#{p.id}"/>
+                                    <f:ajax render="membersSelect"/>
+                                </h:selectOneMenu>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Titre</label>
+                                <h:inputText value="#{taskBean.titre}" styleClass="popup-input"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Description</label>
+                                <h:inputTextarea value="#{taskBean.description}" styleClass="popup-input"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Date début</label>
+                                <h:inputText value="#{projectBean.dateDebut}" styleClass="popup-input">
+                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                    <f:passThroughAttribute name="type" value="date" />
+                                </h:inputText>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Date fin</label>
+                                <h:inputText value="#{projectBean.dateFin}" styleClass="popup-input">
+                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                    <f:passThroughAttribute name="type" value="date" />
+                                </h:inputText>
+                            </div>
+                            <div class="form-group" id="membersSelect">
+                                <label>Assigner à</label>
+                                <h:selectOneMenu value="#{taskBean.assignedStudentId}" styleClass="popup-input">
+                                    <f:selectItem itemLabel="Choisir un membre" itemValue="#{null}"/>
+                                    <f:selectItems value="#{taskBean.projectMembers}" var="m"
+                                                   itemLabel="#{m.nom} #{m.prenom}" itemValue="#{m.id}"/>
+                                </h:selectOneMenu>
+                            </div>
+
+                            <h:commandButton value="Créer la tâche" action="#{taskBean.createTask}" styleClass="popup-btn"/>
+                        </h:form>
+                    </section>
+
+                    <section class="panel-card">
+                        <div class="panel-header">
+                            <h2>Mes tâches assignées</h2>
+                        </div>
+
+                        <ui:repeat value="#{taskBean.myTasks}" var="task">
+                            <div class="task-box">
+                                <h3>#{task.titre}</h3>
+                                <p>#{task.description}</p>
+                                <p><strong>Projet :</strong> #{task.project.titre}</p>
+                                <p><strong>Statut :</strong> #{task.status}</p>
+
+                                <h:form>
+                                    <div class="status-actions">
+                                        <h:commandButton value="TODO" action="#{taskBean.updateTaskStatus(task.id, 'TODO')}" styleClass="secondary-action-btn"/>
+                                        <h:commandButton value="IN_PROGRESS" action="#{taskBean.updateTaskStatus(task.id, 'IN_PROGRESS')}" styleClass="secondary-action-btn"/>
+                                        <h:commandButton value="DONE" action="#{taskBean.updateTaskStatus(task.id, 'DONE')}" styleClass="secondary-action-btn"/>
+                                    </div>
+                                </h:form>
+                            </div>
+                        </ui:repeat>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+</h:body>
+</html>

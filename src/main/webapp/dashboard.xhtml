@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core">
+
+<h:head>
+    <title>Dashboard - WorkShare</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</h:head>
+
+<h:body>
+    <div class="app-layout">
+
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h:graphicImage library="images" name="logo.png" styleClass="sidebar-logo"/>
+                <span>WorkShare</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="dashboard.xhtml" class="sidebar-link active">Dashboard</a>
+                <a href="projects.xhtml" class="sidebar-link">Projects</a>
+                <a href="tasks.xhtml" class="sidebar-link">Tasks</a>
+                <h:commandLink value="Logout" action="#{authBean.logout}" styleClass="sidebar-link"/>
+            </nav>
+        </aside>
+
+        <div class="main-panel">
+            <header class="topbar">
+                <div class="topbar-title">
+                    Bonjour #{authBean.currentUser.prenom} #{authBean.currentUser.nom}
+                </div>
+            </header>
+
+            <main class="dashboard-content">
+                <section class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Mes projets</h3>
+                        <p>#{dashboardBean.totalProjects}</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3>Projets créés</h3>
+                        <p>#{dashboardBean.createdProjects}</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3>Mes tâches</h3>
+                        <p>#{dashboardBean.assignedTasks}</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3>TODO</h3>
+                        <p>#{dashboardBean.todoTasks}</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3>En cours</h3>
+                        <p>#{dashboardBean.inProgressTasks}</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3>Terminées</h3>
+                        <p>#{dashboardBean.doneTasks}</p>
+                    </div>
+                </section>
+
+                <section class="panel-card">
+                    <div class="panel-header">
+                        <h2>Mes projets récents</h2>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table class="custom-table">
+                            <thead>
+                            <tr>
+                                <th>Titre</th>
+                                <th>Date début</th>
+                                <th>Date fin</th>
+                                <th>Membres</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <ui:repeat value="#{dashboardBean.recentProjects}" var="project"
+                                       xmlns:ui="jakarta.faces.facelets">
+                                <tr>
+                                    <td>#{project.titre}</td>
+                                    <td><h:outputText value="#{project.dateDebut}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText></td>
+                                    <td><h:outputText value="#{project.dateFin}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText></td>
+                                    <td>#{project.members.size()}</td>
+                                </tr>
+                            </ui:repeat>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+</h:body>
+</html>

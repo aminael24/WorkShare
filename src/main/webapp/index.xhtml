@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core">
+
+<h:head>
+    <title>WorkShare - Gestion des projets étudiants</title>
+    <h:outputStylesheet library="css" name="style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</h:head>
+
+<h:body>
+
+    <header id="header" class="header fixed-top">
+        <div class="container nav-container">
+            <a href="#hero" class="logo">
+                <h:graphicImage library="images" name="logo.png" alt="Logo" styleClass="logo-img" />
+                <span class="sitename">WORKSHARE</span>
+            </a>
+
+            <nav id="navmenu" class="navmenu">
+                <ul>
+                    <li><a href="#hero" class="active">Accueil</a></li>
+                    <li><a href="#features">Fonctionnalités</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-actions">
+                <a href="#" class="btn-getstarted" onclick="openLogin(); return false;">Commencer</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+
+        <section id="hero" class="hero section">
+            <h:graphicImage library="images" name="mainImg.png" alt="Hero Image" styleClass="hero-bg" />
+
+            <div class="container hero-content">
+                <div class="hero-text">
+                    <h2>
+                        Gérez vos projets étudiants
+                        <br />
+                        <span>ensemble et simplement</span>
+                    </h2>
+
+                    <p>
+                        Une plateforme web collaborative pour organiser les projets académiques,
+                        répartir les tâches, suivre l'avancement du travail et améliorer la
+                        coordination entre les membres de l'équipe.
+                    </p>
+
+                    <div class="hero-buttons">
+                        <a href="#" class="hero-btn primary-btn" onclick="openLogin(); return false;">Se connecter</a>
+                        <a href="#features" class="hero-btn secondary-btn">Découvrir</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features-section section">
+            <div class="container">
+                <div class="section-title large-title reveal">
+                    <h2>Tout ce qu'il faut pour réussir vos projets en équipe</h2>
+                    <p class="description-paragraph wide-text">
+                        <span class="brand">WorkShare</span> aide les étudiants à organiser leurs
+                        projets académiques dans un espace unique. Créez des projets, répartissez
+                        les tâches, collaborez avec les membres de votre équipe et suivez facilement
+                        l'avancement du travail.
+                    </p>
+                </div>
+
+                <div class="feature-cards">
+                    <div class="feature-card large-card reveal reveal-up delay-1">
+                        <div class="feature-image-wrap">
+                            <h:graphicImage library="images" name="featuresBg.png" alt="Gestion des projets" styleClass="feature-card-img" />
+                        </div>
+                        <div class="feature-card-content">
+                            <h3>Gestion des projets</h3>
+                            <p>
+                                Créez vos projets, définissez les dates importantes et centralisez
+                                toutes les informations essentielles dans un espace de travail clair,
+                                structuré et accessible à votre équipe.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card large-card reveal reveal-up delay-2">
+                        <div class="feature-image-wrap">
+                            <h:graphicImage library="images" name="tahce.jpeg" alt="Gestion des tâches" styleClass="feature-card-img" />
+                        </div>
+                        <div class="feature-card-content">
+                            <h3>Gestion des tâches</h3>
+                            <p>
+                                Ajoutez des tâches, définissez leur statut, attribuez-les aux membres
+                                du projet et gardez une vision précise sur les tâches à faire,
+                                en cours et terminées.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card large-card reveal reveal-up delay-3">
+                        <div class="feature-image-wrap">
+                            <h:graphicImage library="images" name="collaboration.png" alt="Collaboration" styleClass="feature-card-img" />
+                        </div>
+                        <div class="feature-card-content">
+                            <h3>Collaboration en équipe</h3>
+                            <p>
+                                Invitez des membres existants, travaillez ensemble sur le même projet
+                                et améliorez la coordination du groupe grâce à une gestion simple,
+                                fluide et collaborative.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="call-to-action" class="call-to-action section dark-background">
+            <h:graphicImage library="images" name="ctaBg.png" alt="CTA Background" styleClass="cta-bg" />
+
+            <div class="container cta-content reveal reveal-zoom">
+                <h3>Créer, organiser, collaborer</h3>
+                <p>
+                    Commencez dès maintenant à gérer vos projets étudiants
+                    dans une plateforme simple, moderne et collaborative.
+                </p>
+                <a href="#" class="cta-btn" onclick="openRegister(); return false;">Commencer maintenant</a>
+            </div>
+        </section>
+
+        <section id="contact" class="contact section">
+            <div class="container section-title reveal reveal-up">
+                <h2>Contact</h2>
+                <p>Projet académique - ENSA Tanger - GINF 2</p>
+            </div>
+
+            <div class="container contact-grid">
+                <div class="contact-info reveal reveal-left">
+                    <div class="info-item">
+                        <h3>Établissement</h3>
+                        <p>École Nationale des Sciences Appliquées de Tanger</p>
+                    </div>
+
+                    <div class="info-item">
+                        <h3>Filière</h3>
+                        <p>GINF 2 - Développement web</p>
+                    </div>
+
+                    <div class="info-item">
+                        <h3>Projet</h3>
+                        <p>Plateforme de gestion des projets étudiants</p>
+                    </div>
+                </div>
+
+                <div class="contact-form-box reveal reveal-right delay-1">
+                    <h:form styleClass="email-form">
+                        <input type="text" placeholder="Votre nom" />
+                        <input type="email" placeholder="Votre email" />
+                        <input type="text" placeholder="Sujet" />
+                        <textarea rows="6" placeholder="Votre message"></textarea>
+                        <button type="submit">Envoyer</button>
+                    </h:form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-content reveal reveal-up">
+            <div class="footer-brand">
+                <h3>WorkShare</h3>
+                <p>Plateforme collaborative pour la gestion des projets étudiants.</p>
+            </div>
+
+            <nav class="footer-nav">
+                <ul>
+                    <li><a href="#hero">Accueil</a></li>
+                    <li><a href="#features">Fonctionnalités</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+
+            <div class="footer-divider"></div>
+
+            <p class="copyright">&#169; 2025 <strong>WorkShare</strong>. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <!-- LOGIN POPUP -->
+    <div id="loginPopup" class="popup-overlay">
+        <div class="popup-box">
+
+            <span class="close-btn" onclick="closePopup('loginPopup')">&#215;</span>
+
+            <div class="popup-logo">
+                <h:graphicImage library="images" name="log.png" alt="Logo" styleClass="popup-logo-img" />
+                <h2>Connexion</h2>
+            </div>
+
+            <h:form id="loginForm">
+
+                <!-- Messages globaux -->
+                <h:messages globalOnly="true" styleClass="global-messages" />
+
+                <!-- Messages d'erreur pour les champs -->
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <h:inputText id="loginEmail"
+                                 value="#{authBean.loginEmail}"
+                                 required="true"
+                                 requiredMessage="Email obligatoire"
+                                 styleClass="popup-input" />
+                    <h:message for="loginEmail" styleClass="field-error" />
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Mot de passe</label>
+                    <h:inputSecret id="loginPassword"
+                                   value="#{authBean.loginPassword}"
+                                   required="true"
+                                   requiredMessage="Mot de passe obligatoire"
+                                   styleClass="popup-input" />
+                    <h:message for="loginPassword" styleClass="field-error" />
+                </div>
+
+                <h:commandButton value="Se connecter"
+                                 action="#{authBean.login}"
+                                 styleClass="popup-btn">
+                    <f:ajax execute="@form"
+                            render="@form" />
+                </h:commandButton>
+
+            </h:form>
+
+            <p class="switch-text">
+                Pas de compte ?
+                <a href="#" onclick="switchPopup('loginPopup','registerPopup'); return false;">Créer un compte</a>
+            </p>
+
+        </div>
+    </div>
+
+    <!-- REGISTER POPUP -->
+    <div id="registerPopup" class="popup-overlay">
+        <div class="popup-box">
+
+            <span class="close-btn" onclick="closePopup('registerPopup')">&#215;</span>
+
+            <div class="popup-logo">
+                <h:graphicImage library="images" name="log.png" alt="Logo" styleClass="popup-logo-img" />
+                <h2>Créer un compte</h2>
+            </div>
+
+            <h:form id="registerForm">
+
+                <!-- Messages globaux -->
+                <h:messages globalOnly="true" styleClass="global-messages" />
+
+                <div class="form-group">
+                    <label for="nom">Nom</label>
+                    <h:inputText id="nom"
+                                 value="#{authBean.nom}"
+                                 required="true"
+                                 requiredMessage="Le nom est obligatoire"
+                                 styleClass="popup-input" />
+                    <h:message for="nom" styleClass="field-error" />
+                </div>
+
+                <div class="form-group">
+                    <label for="prenom">Prénom</label>
+                    <h:inputText id="prenom"
+                                 value="#{authBean.prenom}"
+                                 required="true"
+                                 requiredMessage="Le prénom est obligatoire"
+                                 styleClass="popup-input" />
+                    <h:message for="prenom" styleClass="field-error" />
+                </div>
+
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <h:inputText id="registerEmail"
+                                 value="#{authBean.registerEmail}"
+                                 required="true"
+                                 requiredMessage="L'email est obligatoire"
+                                 styleClass="popup-input" />
+                    <h:message for="registerEmail" styleClass="field-error" />
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPassword">Mot de passe</label>
+                    <h:inputSecret id="registerPassword"
+                                   value="#{authBean.registerPassword}"
+                                   required="true"
+                                   requiredMessage="Le mot de passe est obligatoire"
+                                   styleClass="popup-input" />
+                    <h:message for="registerPassword" styleClass="field-error" />
+                </div>
+
+                <h:commandButton value="Créer le compte"
+                                 action="#{authBean.register}"
+                                 styleClass="popup-btn">
+                    <f:ajax execute="@form"
+                            render="@form" />
+                </h:commandButton>
+
+            </h:form>
+
+            <p class="switch-text">
+                Déjà un compte ?
+                <a href="#" onclick="switchPopup('registerPopup','loginPopup'); return false;">Se connecter</a>
+            </p>
+
+        </div>
+    </div>
+    <h:outputScript target="body">
+        /*<![CDATA[*/
+function openLogin() {
+    document.getElementById('loginPopup').style.display = 'flex';
+}
+
+function openRegister() {
+    document.getElementById('registerPopup').style.display = 'flex';
+}
+
+function closePopup(id) {
+    document.getElementById(id).style.display = 'none';
+}
+
+function switchPopup(closeId, openId) {
+    closePopup(closeId);
+    document.getElementById(openId).style.display = 'flex';
+}
+
+// AJOUTEZ CETTE FONCTION
+function showPopupAfterAjax(data) {
+    if (data.status === 'success') {
+        // Garde la popup ouverte après l'AJAX
+        var popupId = data.source.id.includes('login') ? 'loginPopup' : 'registerPopup';
+        document.getElementById(popupId).style.display = 'flex';
+    }
+}
+
+window.onclick = function(event) {
+    const loginPopup = document.getElementById('loginPopup');
+    const registerPopup = document.getElementById('registerPopup');
+
+    if (event.target === loginPopup) {
+        loginPopup.style.display = 'none';
+    }
+
+    if (event.target === registerPopup) {
+        registerPopup.style.display = 'none';
+    }
+};
+/*]]>*/
+    </h:outputScript>
+</h:body>
+</html>
