@@ -54,14 +54,15 @@ public class TaskDao {
 
     public List<Task> findByProject(Project project) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Query<Task> query = session.createQuery(
-                    "select t from Task t " +
-                            "left join fetch t.assignedStudent " +
-                            "left join fetch t.creator " +
-                            "where t.project = :project " +
-                            "order by t.id desc", Task.class);
-            query.setParameter("project", project);
-            return query.list();
+            return session.createQuery(
+                            "select t from Task t " +
+                                    "left join fetch t.assignedStudent " +
+                                    "left join fetch t.creator " +
+                                    "where t.project = :project " +
+                                    "order by t.id desc",
+                            Task.class
+                    ).setParameter("project", project)
+                    .list();
         }
     }
 
