@@ -78,7 +78,29 @@ public class TaskDao {
             return query.list();
         }
     }
+    public long countByProject(Long projectId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Long result = session.createQuery(
+                            "select count(t.id) from Task t where t.project.id = :projectId",
+                            Long.class
+                    ).setParameter("projectId", projectId)
+                    .uniqueResult();
 
+            return result != null ? result : 0L;
+        }
+    }
+
+    public long countDoneByProject(Long projectId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Long result = session.createQuery(
+                            "select count(t.id) from Task t where t.project.id = :projectId and t.status = 'DONE'",
+                            Long.class
+                    ).setParameter("projectId", projectId)
+                    .uniqueResult();
+
+            return result != null ? result : 0L;
+        }
+    }
     public Long countAssignedTasks(Student student) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery(

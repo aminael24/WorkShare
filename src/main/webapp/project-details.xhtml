@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+
+<f:metadata>
+    <f:viewParam name="projectId" value="#{projectBean.projectId}" />
+    <f:viewAction action="#{projectBean.loadSelectedProject}" />
+</f:metadata>
+
+<h:head>
+    <title>Détails Projet - WorkShare</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</h:head>
+
+<h:body>
+    <div class="app-layout">
+
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h:graphicImage library="images" name="logo.png" styleClass="sidebar-logo"/>
+                <span>WorkShare</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="dashboard.xhtml" class="sidebar-link">Dashboard</a>
+                <a href="projects.xhtml" class="sidebar-link active">Projects</a>
+                <h:link outcome="tasks.xhtml" styleClass="sidebar-link">
+                    <f:param name="projectId" value="#{projectBean.selectedProject.id}" />
+                    Tasks
+                </h:link>
+                <h:commandLink value="Logout" action="#{authBean.logout}" styleClass="sidebar-link"/>
+            </nav>
+        </aside>
+
+        <div class="main-panel">
+            <header class="topbar">
+                <div class="topbar-title">
+                    #{projectBean.selectedProject.titre}
+                </div>
+            </header>
+
+            <main class="dashboard-content">
+                <h:messages globalOnly="true" styleClass="global-messages"/>
+
+                <div class="project-details-header">
+                    <div>
+                        <a href="projects.xhtml" class="back-link">← Retour aux projets</a>
+                        <h1>#{projectBean.selectedProject.titre}</h1>
+                        <p>#{projectBean.selectedProject.description}</p>
+                        <p>
+                            <strong>Période :</strong>
+                            <h:outputText value="#{projectBean.selectedProject.dateDebut}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                            -
+                            <h:outputText value="#{projectBean.selectedProject.dateFin}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </p>
+                    </div>
+
+                    <div class="project-header-actions">
+                        <button type="button" class="project-add-btn" onclick="openTaskPopup()">+ Tâche</button>
+                    </div>
+                </div>
+
+                <section class="panel-card">
+                    <div class="project-progress-row">
+                        <span>Avancement global</span>
+                        <span>#{projectBean.getProjectProgress(projectBean.selectedProject)}%</span>
+                    </div>
+                    <div class="project-progress-bar">
+                        <div class="project-progress-fill"
+                             style="width: #{projectBean.getProjectProgress(projectBean.selectedProject)}%;"></div>
+                    </div>
+                </section>
+
+                <section class="panel-card">
+                    <div class="panel-header">
+                        <h2>Membres (#{projectBean.selectedProject.members.size()})</h2>
+                    </div>
+
+                    <div class="members-list">
+                        <ui:repeat value="#{projectBean.selectedProject.members}" var="member">
+                            <div class="member-chip">
+                                #{member.prenom} #{member.nom}
+                            </div>
+                        </ui:repeat>
+                    </div>
+                </section>
+
+                <section class="panel-card">
+                    <div class="panel-header">
+                        <h2>Tableau des tâches</h2>
+                    </div>
+
+                    <div class="kanban-board">
+                        <div class="kanban-column">
+                            <div class="kanban-title">À faire</div>
+                            <ui:repeat value="#{taskBean.getTasksByStatus(projectBean.selectedProject.id, 'TODO')}" var="task">
+                                <div class="task-box">
+                                    <h3>#{task.titre}</h3>
+                                    <p>#{task.description}</p>
+                                    <p>
+                                        <strong>Assigné à :</strong>
+                                        #{task.assignedStudent != null ? task.assignedStudent.prenom.concat(' ').concat(task.assignedStudent.nom) : 'Non assigné'}
+                                    </p>
+                                    <p>
+                                        <strong>Fin :</strong>
+                                        <h:outputText value="#{task.dateFin}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </h:outputText>
+                                    </p>
+
+                                    <h:form>
+                                        <h:commandButton value="En cours"
+                                                         action="#{taskBean.updateTaskStatusFromProject(task.id, 'IN_PROGRESS', projectBean.selectedProject.id)}"
+                                                         styleClass="secondary-action-btn"/>
+                                    </h:form>
+                                </div>
+                            </ui:repeat>
+                        </div>
+
+                        <div class="kanban-column">
+                            <div class="kanban-title">En cours</div>
+                            <ui:repeat value="#{taskBean.getTasksByStatus(projectBean.selectedProject.id, 'IN_PROGRESS')}" var="task">
+                                <div class="task-box">
+                                    <h3>#{task.titre}</h3>
+                                    <p>#{task.description}</p>
+                                    <p>
+                                        <strong>Assigné à :</strong>
+                                        #{task.assignedStudent != null ? task.assignedStudent.prenom.concat(' ').concat(task.assignedStudent.nom) : 'Non assigné'}
+                                    </p>
+                                    <p>
+                                        <strong>Fin :</strong>
+                                        <h:outputText value="#{task.dateFin}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </h:outputText>
+                                    </p>
+
+                                    <h:form>
+                                        <h:commandButton value="Terminer"
+                                                         action="#{taskBean.updateTaskStatusFromProject(task.id, 'DONE', projectBean.selectedProject.id)}"
+                                                         styleClass="secondary-action-btn"/>
+                                    </h:form>
+                                </div>
+                            </ui:repeat>
+                        </div>
+
+                        <div class="kanban-column">
+                            <div class="kanban-title">Terminé</div>
+                            <ui:repeat value="#{taskBean.getTasksByStatus(projectBean.selectedProject.id, 'DONE')}" var="task">
+                                <div class="task-box">
+                                    <h3>#{task.titre}</h3>
+                                    <p>#{task.description}</p>
+                                    <p>
+                                        <strong>Assigné à :</strong>
+                                        #{task.assignedStudent != null ? task.assignedStudent.prenom.concat(' ').concat(task.assignedStudent.nom) : 'Non assigné'}
+                                    </p>
+                                    <p>
+                                        <strong>Fin :</strong>
+                                        <h:outputText value="#{task.dateFin}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </h:outputText>
+                                    </p>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <div id="taskPopup" class="custom-modal-overlay">
+        <div class="custom-modal-box">
+            <div class="custom-modal-header">
+                <div>
+                    <h2>Créer une tâche</h2>
+                    <p>Ajouter une tâche au projet et l’assigner à un membre.</p>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closeTaskPopup()">×</button>
+            </div>
+
+            <h:form id="taskCreateForm">
+                <h:inputHidden value="#{taskBean.projectId}" />
+                <f:metadata />
+                <f:viewAction action="#{taskBean.setProjectId(projectBean.selectedProject.id)}" />
+
+                <div class="form-group">
+                    <label>Titre</label>
+                    <h:inputText value="#{taskBean.titre}" styleClass="popup-input"/>
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <h:inputTextarea value="#{taskBean.description}" styleClass="popup-input" rows="4"/>
+                </div>
+
+                <div class="modal-date-grid">
+                    <div class="form-group">
+                        <label>Date début</label>
+                        <h:inputText value="#{taskBean.dateDebut}" styleClass="popup-input">
+                            <f:convertDateTime pattern="yyyy-MM-dd"/>
+                            <f:passThroughAttribute name="type" value="date"/>
+                        </h:inputText>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date fin</label>
+                        <h:inputText value="#{taskBean.dateFin}" styleClass="popup-input">
+                            <f:convertDateTime pattern="yyyy-MM-dd"/>
+                            <f:passThroughAttribute name="type" value="date"/>
+                        </h:inputText>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Assigner à</label>
+                    <h:selectOneMenu value="#{taskBean.assignedStudentId}" styleClass="popup-input">
+                        <f:selectItem itemLabel="Choisir un membre" itemValue="#{null}"/>
+                        <f:selectItems value="#{projectBean.selectedProject.members}" var="m"
+                                       itemLabel="#{m.nom} #{m.prenom}" itemValue="#{m.id}"/>
+                    </h:selectOneMenu>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="modal-cancel-btn" onclick="closeTaskPopup()">Annuler</button>
+                    <h:commandButton value="Créer"
+                                     action="#{taskBean.createTaskAndRedirect(projectBean.selectedProject.id)}"
+                                     styleClass="modal-create-btn"/>
+                </div>
+            </h:form>
+        </div>
+    </div>
+
+    <h:outputScript target="body">
+        function openTaskPopup() {
+        document.getElementById('taskPopup').style.display = 'flex';
+        }
+
+        function closeTaskPopup() {
+        document.getElementById('taskPopup').style.display = 'none';
+        }
+
+        window.addEventListener('click', function(event) {
+        const popup = document.getElementById('taskPopup');
+        if (event.target === popup) {
+        popup.style.display = 'none';
+        }
+        });
+    </h:outputScript>
+</h:body>
+</html>

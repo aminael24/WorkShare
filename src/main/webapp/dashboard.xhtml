@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
-      xmlns:f="jakarta.faces.core">
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
 
 <h:head>
     <title>Dashboard - WorkShare</title>
@@ -28,12 +29,32 @@
 
         <div class="main-panel">
             <header class="topbar">
-                <div class="topbar-title">
-                    Bonjour #{authBean.currentUser.prenom} #{authBean.currentUser.nom}
+
+
+                <div class="topbar-profile">
+                    <button type="button" class="profile-btn" onclick="toggleProfileMenu()">
+                        <h:graphicImage library="images" name="user.png" styleClass="profile-avatar"/>
+                    </button>
+
+                    <div id="profileMenu" class="profile-dropdown">
+                        <div class="profile-dropdown-header">
+                            <h4>#{authBean.currentUser.prenom} #{authBean.currentUser.nom}</h4>
+                            <p>#{authBean.currentUser.email}</p>
+                        </div>
+
+
+
+                        <h:form>
+                            <h:commandButton value="Se déconnecter"
+                                             action="#{authBean.logout}"
+                                             styleClass="logout-profile-btn"/>
+                        </h:form>
+                    </div>
                 </div>
             </header>
 
             <main class="dashboard-content">
+
                 <section class="stats-grid">
                     <div class="stat-card">
                         <h3>Mes projets</h3>
@@ -82,16 +103,19 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <ui:repeat value="#{dashboardBean.recentProjects}" var="project"
-                                       xmlns:ui="jakarta.faces.facelets">
+                            <ui:repeat value="#{dashboardBean.recentProjects}" var="project">
                                 <tr>
                                     <td>#{project.titre}</td>
-                                    <td><h:outputText value="#{project.dateDebut}">
-                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
-                                    </h:outputText></td>
-                                    <td><h:outputText value="#{project.dateFin}">
-                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
-                                    </h:outputText></td>
+                                    <td>
+                                        <h:outputText value="#{project.dateDebut}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </h:outputText>
+                                    </td>
+                                    <td>
+                                        <h:outputText value="#{project.dateFin}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </h:outputText>
+                                    </td>
                                     <td>#{project.members.size()}</td>
                                 </tr>
                             </ui:repeat>
@@ -102,5 +126,23 @@
             </main>
         </div>
     </div>
+
+    <h:outputScript target="body">
+        function toggleProfileMenu() {
+        const menu = document.getElementById('profileMenu');
+        menu.classList.toggle('show');
+        }
+
+        window.addEventListener('click', function(event) {
+        const menu = document.getElementById('profileMenu');
+        const button = document.querySelector('.profile-btn');
+
+        if (!menu || !button) return;
+
+        if (!button.contains(event.target) &amp;&amp; !menu.contains(event.target)) {
+        menu.classList.remove('show');
+        }
+        });
+    </h:outputScript>
 </h:body>
 </html>

@@ -6,9 +6,9 @@ import com.example.gestionprojets.entity.Task;
 import com.example.gestionprojets.service.ProjectService;
 import com.example.gestionprojets.service.TaskService;
 import jakarta.annotation.PostConstruct;
-import jakarta.faces.view.ViewScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
@@ -55,6 +55,18 @@ public class ProjectBean implements Serializable {
 
     public void createProject() {
         try {
+            if (dateDebut == null || dateFin == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Les dates sont obligatoires.", null));
+                return;
+            }
+
+            if (dateFin.before(dateDebut)) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "La date de fin doit être après la date de début.", null));
+                return;
+            }
+
             Project project = new Project();
             project.setTitre(titre);
             project.setDescription(description);
@@ -68,7 +80,9 @@ public class ProjectBean implements Serializable {
 
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "Projet créé avec succès.", null));
+
         } catch (Exception e) {
+            e.printStackTrace();
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur lors de la création du projet.", null));
         }
@@ -89,6 +103,7 @@ public class ProjectBean implements Serializable {
         switch (result) {
             case "SUCCESS":
                 selectedProject = projectService.findById(selectedProjectId);
+                loadProjects();
                 memberEmail = null;
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_INFO, "Membre ajouté avec succès.", null));
@@ -120,10 +135,12 @@ public class ProjectBean implements Serializable {
 
         if (ok) {
             loadProjects();
+
             if (selectedProject != null && selectedProject.getId().equals(projectId)) {
                 selectedProject = null;
                 selectedProjectTasks = null;
             }
+
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "Projet supprimé.", null));
         } else {
@@ -139,35 +156,112 @@ public class ProjectBean implements Serializable {
                 && project.getCreator().getId().equals(authBean.getCurrentUser().getId());
     }
 
+    public void addEmailToList() {
+        if (memberEmail != null && !memberEmail.trim().isEmpty()) {
+            if (!memberEmails.contains(memberEmail.trim())) {
+                memberEmails.add(memberEmail.trim());
+            }
+            memberEmail = null;
+        }
+    }
+
     private void resetForm() {
         titre = null;
         description = null;
         dateDebut = null;
         dateFin = null;
+        memberEmail = null;
         memberEmails.clear();
     }
 
-    public void addEmailToList() {
-        if (memberEmail != null && !memberEmail.trim().isEmpty()) {
-            memberEmails.add(memberEmail.trim());
-            memberEmail = null;
+    public long getTotalTasks(Project project) {
+        if (project == null || project.getId() == null) {
+            return 0;
         }
+        return taskService.countByProject(project.getId());
     }
 
-    public List<Project> getMyProjects() { return myProjects; }
-    public Long getSelectedProjectId() { return selectedProjectId; }
-    public void setSelectedProjectId(Long selectedProjectId) { this.selectedProjectId = selectedProjectId; }
-    public Project getSelectedProject() { return selectedProject; }
-    public String getTitre() { return titre; }
-    public void setTitre(String titre) { this.titre = titre; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    public Date getDateDebut() { return dateDebut; }
-    public void setDateDebut(Date dateDebut) { this.dateDebut = dateDebut; }
-    public Date getDateFin() { return dateFin; }
-    public void setDateFin(Date dateFin) { this.dateFin = dateFin; }
-    public String getMemberEmail() { return memberEmail; }
-    public void setMemberEmail(String memberEmail) { this.memberEmail = memberEmail; }
-    public List<String> getMemberEmails() { return memberEmails; }
-    public List<Task> getSelectedProjectTasks() { return selectedProjectTasks; }
+    public long getDoneTasksCount(Project project) {
+        if (project == null || project.getId() == null) {
+            return 0;
+        }
+        return taskService.countDoneByProject(project.getId());
+    }
+
+    public int getProjectProgress(Project project) {
+        long total = getTotalTasks(project);
+
+        if (total == 0) {
+            return 0;
+        }
+
+        long done = getDoneTasksCount(project);
+        return (int) ((done * 100) / total);
+    }
+
+    public List<Project> getMyProjects() {
+        return myProjects;
+    }
+
+    public Long getSelectedProjectId() {
+        return selectedProjectId;
+    }
+
+    public void setSelectedProjectId(Long selectedProjectId) {
+        this.selectedProjectId = selectedProjectId;
+    }
+
+    public Project getSelectedProject() {
+        return selectedProject;
+    }
+
+    public String getTitre() {
+        return titre;
+    }
+
+    public void setTitre(String titre) {
+        this.titre = titre;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Date getDateDebut() {
+        return dateDebut;
+    }
+
+    public void setDateDebut(Date dateDebut) {
+        this.dateDebut = dateDebut;
+    }
+
+    public Date getDateFin() {
+        return dateFin;
+    }
+
+    public void setDateFin(Date dateFin) {
+        this.dateFin = dateFin;
+    }
+
+    public String getMemberEmail() {
+        return memberEmail;
+    }
+
+    public void setMemberEmail(String memberEmail) {
+        this.memberEmail = memberEmail;
+    }
+
+    public List<String> getMemberEmails() {
+        return memberEmails;
+    }
+
+    public List<Task> getSelectedProjectTasks() {
+        return selectedProjectTasks;
+    }
+
+
 }

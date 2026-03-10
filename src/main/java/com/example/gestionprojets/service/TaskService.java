@@ -13,7 +13,13 @@ public class TaskService {
 
     private final TaskDao taskDao = new TaskDao();
     private final ProjectDao projectDao = new ProjectDao();
+    public long countByProject(Long projectId) {
+        return taskDao.countByProject(projectId);
+    }
 
+    public long countDoneByProject(Long projectId) {
+        return taskDao.countDoneByProject(projectId);
+    }
     public boolean createTask(Task task, Long projectId, Long assignedStudentId, Student creator) {
         Project project = projectDao.findById(projectId);
         if (project == null) return false;
