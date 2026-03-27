@@ -20,7 +20,7 @@
 
             <nav id="navmenu" class="navmenu">
                 <ul>
-                    <li><a href="#hero" class="active">Accueil</a></li>
+                    <li><a href="#hero">Accueil</a></li>
                     <li><a href="#features">Fonctionnalités</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
@@ -38,20 +38,20 @@
             <h:graphicImage library="images" name="mainImg.png" alt="Hero Image" styleClass="hero-bg" />
 
             <div class="container hero-content">
-                <div class="hero-text">
-                    <h2>
+                <div class="hero-text reveal reveal-up">
+                    <h2 class="reveal reveal-up delay-1">
                         Gérez vos projets étudiants
                         <br />
                         <span>ensemble et simplement</span>
                     </h2>
 
-                    <p>
+                    <p class="reveal reveal-up delay-2">
                         Une plateforme web collaborative pour organiser les projets académiques,
                         répartir les tâches, suivre l'avancement du travail et améliorer la
                         coordination entre les membres de l'équipe.
                     </p>
 
-                    <div class="hero-buttons">
+                    <div class="hero-buttons reveal reveal-up delay-3">
                         <a href="#" class="hero-btn primary-btn" onclick="openLogin(); return false;">Se connecter</a>
                         <a href="#features" class="hero-btn secondary-btn">Découvrir</a>
                     </div>
@@ -61,7 +61,7 @@
 
         <section id="features" class="features-section section">
             <div class="container">
-                <div class="section-title large-title reveal">
+                <div class="section-title large-title reveal reveal-up">
                     <h2>Tout ce qu'il faut pour réussir vos projets en équipe</h2>
                     <p class="description-paragraph wide-text">
                         <span class="brand">WorkShare</span> aide les étudiants à organiser leurs
@@ -118,15 +118,19 @@
         </section>
 
         <section id="call-to-action" class="call-to-action section dark-background">
-            <h:graphicImage library="images" name="ctaBg.png" alt="CTA Background" styleClass="cta-bg" />
+            <div class="cta-parallax-bg" aria-hidden="true">
+                <h:graphicImage library="images" name="ctaBg.png" alt="CTA Background" styleClass="cta-bg" />
+            </div>
 
-            <div class="container cta-content reveal reveal-zoom">
-                <h3>Créer, organiser, collaborer</h3>
-                <p>
-                    Commencez dès maintenant à gérer vos projets étudiants
-                    dans une plateforme simple, moderne et collaborative.
-                </p>
-                <a href="#" class="cta-btn" onclick="openRegister(); return false;">Commencer maintenant</a>
+            <div class="container">
+                <div class="cta-content reveal reveal-zoom">
+                    <h3>Créer, organiser, collaborer</h3>
+                    <p>
+                        Commencez dès maintenant à gérer vos projets étudiants
+                        dans une plateforme simple, moderne et collaborative.
+                    </p>
+                    <a href="#" class="cta-btn" onclick="openRegister(); return false;">Commencer maintenant</a>
+                </div>
             </div>
         </section>
 
@@ -192,7 +196,6 @@
     <!-- LOGIN POPUP -->
     <div id="loginPopup" class="popup-overlay">
         <div class="popup-box">
-
             <span class="close-btn" onclick="closePopup('loginPopup')">&#215;</span>
 
             <div class="popup-logo">
@@ -201,11 +204,8 @@
             </div>
 
             <h:form id="loginForm">
-
-                <!-- Messages globaux -->
                 <h:messages globalOnly="true" styleClass="global-messages" />
 
-                <!-- Messages d'erreur pour les champs -->
                 <div class="form-group">
                     <label for="loginEmail">Email</label>
                     <h:inputText id="loginEmail"
@@ -230,23 +230,21 @@
                                  action="#{authBean.login}"
                                  styleClass="popup-btn">
                     <f:ajax execute="@form"
-                            render="@form" />
+                            render="@form"
+                            onevent="showPopupAfterAjax" />
                 </h:commandButton>
-
             </h:form>
 
             <p class="switch-text">
                 Pas de compte ?
                 <a href="#" onclick="switchPopup('loginPopup','registerPopup'); return false;">Créer un compte</a>
             </p>
-
         </div>
     </div>
 
     <!-- REGISTER POPUP -->
     <div id="registerPopup" class="popup-overlay">
         <div class="popup-box">
-
             <span class="close-btn" onclick="closePopup('registerPopup')">&#215;</span>
 
             <div class="popup-logo">
@@ -255,8 +253,6 @@
             </div>
 
             <h:form id="registerForm">
-
-                <!-- Messages globaux -->
                 <h:messages globalOnly="true" styleClass="global-messages" />
 
                 <div class="form-group">
@@ -303,59 +299,132 @@
                                  action="#{authBean.register}"
                                  styleClass="popup-btn">
                     <f:ajax execute="@form"
-                            render="@form" />
+                            render="@form"
+                            onevent="showPopupAfterAjax" />
                 </h:commandButton>
-
             </h:form>
 
             <p class="switch-text">
                 Déjà un compte ?
                 <a href="#" onclick="switchPopup('registerPopup','loginPopup'); return false;">Se connecter</a>
             </p>
-
         </div>
     </div>
+
     <h:outputScript target="body">
         /*<![CDATA[*/
-function openLogin() {
-    document.getElementById('loginPopup').style.display = 'flex';
-}
+        function openLogin() {
+            document.getElementById('loginPopup').style.display = 'flex';
+        }
 
-function openRegister() {
-    document.getElementById('registerPopup').style.display = 'flex';
-}
+        function openRegister() {
+            document.getElementById('registerPopup').style.display = 'flex';
+        }
 
-function closePopup(id) {
-    document.getElementById(id).style.display = 'none';
-}
+        function closePopup(id) {
+            document.getElementById(id).style.display = 'none';
+        }
 
-function switchPopup(closeId, openId) {
-    closePopup(closeId);
-    document.getElementById(openId).style.display = 'flex';
-}
+        function switchPopup(closeId, openId) {
+            closePopup(closeId);
+            document.getElementById(openId).style.display = 'flex';
+        }
 
-// AJOUTEZ CETTE FONCTION
-function showPopupAfterAjax(data) {
-    if (data.status === 'success') {
-        // Garde la popup ouverte après l'AJAX
-        var popupId = data.source.id.includes('login') ? 'loginPopup' : 'registerPopup';
-        document.getElementById(popupId).style.display = 'flex';
-    }
-}
+        function showPopupAfterAjax(data) {
+            if (data.status === 'success') {
+                var popupId = data.source.id.indexOf('login') !== -1 ? 'loginPopup' : 'registerPopup';
+                document.getElementById(popupId).style.display = 'flex';
+            }
+        }
 
-window.onclick = function(event) {
-    const loginPopup = document.getElementById('loginPopup');
-    const registerPopup = document.getElementById('registerPopup');
+        function initReveal() {
+            var revealElements = document.querySelectorAll(
+                '.reveal, .reveal-up, .reveal-left, .reveal-right, .reveal-zoom'
+            );
 
-    if (event.target === loginPopup) {
-        loginPopup.style.display = 'none';
-    }
+            if (!('IntersectionObserver' in window)) {
+                revealElements.forEach(function(el) {
+                    el.classList.add('active');
+                });
+                return;
+            }
 
-    if (event.target === registerPopup) {
-        registerPopup.style.display = 'none';
-    }
-};
-/*]]>*/
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, {
+                threshold: 0.18,
+                rootMargin: '0px 0px -80px 0px'
+            });
+
+            revealElements.forEach(function(el) {
+                observer.observe(el);
+            });
+
+            var heroElements = document.querySelectorAll(
+                '#hero .reveal, #hero .reveal-up, #hero .reveal-left, #hero .reveal-right, #hero .reveal-zoom'
+            );
+
+            setTimeout(function() {
+                heroElements.forEach(function(el) {
+                    el.classList.add('active');
+                });
+            }, 180);
+        }
+
+        function initActiveNavOnScroll() {
+            var sections = document.querySelectorAll('main section[id]');
+            var navLinks = document.querySelectorAll('#navmenu a');
+
+            function updateActiveLink() {
+                var scrollY = window.pageYOffset;
+                var currentSectionId = 'hero';
+
+                sections.forEach(function(section) {
+                    var sectionTop = section.offsetTop - 160;
+                    var sectionHeight = section.offsetHeight;
+
+                    if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                        currentSectionId = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(function(link) {
+                    link.classList.remove('active');
+                    var href = link.getAttribute('href');
+
+                    if (href === '#' + currentSectionId) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+
+            updateActiveLink();
+            window.addEventListener('scroll', updateActiveLink);
+        }
+
+        window.addEventListener('load', function() {
+            initReveal();
+            initActiveNavOnScroll();
+        });
+
+        window.onclick = function(event) {
+            var loginPopup = document.getElementById('loginPopup');
+            var registerPopup = document.getElementById('registerPopup');
+
+            if (event.target === loginPopup) {
+                loginPopup.style.display = 'none';
+            }
+
+            if (event.target === registerPopup) {
+                registerPopup.style.display = 'none';
+            }
+        };
+        /*]]>*/
     </h:outputScript>
+
 </h:body>
 </html>
