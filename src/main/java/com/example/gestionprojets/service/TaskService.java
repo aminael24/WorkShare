@@ -52,6 +52,10 @@ public class TaskService {
         return taskDao.findAssignedToStudent(student);
     }
 
+    public List<Task> getTasksByProjectAndStatus(Long projectId, TaskStatus status) {
+        return taskDao.findByProjectAndStatus(projectId, status);
+    }
+
     public boolean updateStatus(Long taskId, TaskStatus newStatus, Student currentUser) {
         Task task = taskDao.findById(taskId);
         if (task == null) return false;

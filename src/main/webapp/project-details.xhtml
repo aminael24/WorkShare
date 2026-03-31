@@ -5,7 +5,7 @@
       xmlns:ui="jakarta.faces.facelets">
 
 <f:metadata>
-    <f:viewParam name="projectId" value="#{projectBean.projectId}" />
+    <f:viewParam name="projectId" value="#{projectBean.selectedProjectId}" />
     <f:viewAction action="#{projectBean.loadSelectedProject}" />
 </f:metadata>
 
@@ -31,7 +31,11 @@
                     <f:param name="projectId" value="#{projectBean.selectedProject.id}" />
                     Tasks
                 </h:link>
-                <h:commandLink value="Logout" action="#{authBean.logout}" styleClass="sidebar-link"/>
+                <h:form>
+                    <h:commandButton value="Logout" action="#{authBean.logout}" styleClass="logout-profile-btn" immediate="true">
+                        <f:ajax disabled="true"/>
+                    </h:commandButton>
+                </h:form>
             </nav>
         </aside>
 
@@ -43,134 +47,200 @@
             </header>
 
             <main class="dashboard-content">
+
                 <h:messages globalOnly="true" styleClass="global-messages"/>
 
+                <!-- HEADER -->
                 <div class="project-details-header">
                     <div>
                         <a href="projects.xhtml" class="back-link">← Retour aux projets</a>
+
                         <h1>#{projectBean.selectedProject.titre}</h1>
+
                         <p>#{projectBean.selectedProject.description}</p>
-                        <p>
+
+                        <p class="project-dates">
                             <strong>Période :</strong>
                             <h:outputText value="#{projectBean.selectedProject.dateDebut}">
-                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                <f:convertDateTime pattern="dd MMM yyyy"/>
                             </h:outputText>
-                            -
+                            →
                             <h:outputText value="#{projectBean.selectedProject.dateFin}">
-                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                <f:convertDateTime pattern="dd MMM yyyy"/>
                             </h:outputText>
                         </p>
                     </div>
 
                     <div class="project-header-actions">
-                        <button type="button" class="project-add-btn" onclick="openTaskPopup()">+ Tâche</button>
+                        <button type="button" class="project-add-btn" onclick="openTaskPopup()">
+                            + Nouvelle tâche
+                        </button>
                     </div>
                 </div>
 
+                <!-- PROGRESS -->
                 <section class="panel-card">
                     <div class="project-progress-row">
                         <span>Avancement global</span>
-                        <span>#{projectBean.getProjectProgress(projectBean.selectedProject)}%</span>
+                        <span>
+                #{projectBean.getProjectProgress(projectBean.selectedProject)}%
+            </span>
                     </div>
+
                     <div class="project-progress-bar">
                         <div class="project-progress-fill"
-                             style="width: #{projectBean.getProjectProgress(projectBean.selectedProject)}%;"></div>
+                             style="width: #{projectBean.getProjectProgress(projectBean.selectedProject)}%;">
+                        </div>
                     </div>
                 </section>
 
+                <!-- MEMBERS -->
                 <section class="panel-card">
                     <div class="panel-header">
                         <h2>Membres (#{projectBean.selectedProject.members.size()})</h2>
+                        <h:panelGroup rendered="#{projectBean.isChef(projectBean.selectedProject)}">
+                            <h:form>
+                                <h:commandButton value="+ Ajouter un membre"
+                                                 action="#{projectBean.openAddMemberPopup}"
+                                                 styleClass="project-add-btn"
+                                                 onclick="openAddMemberPopup(); return false;"/>
+                            </h:form>
+                        </h:panelGroup>
                     </div>
 
                     <div class="members-list">
-                        <ui:repeat value="#{projectBean.selectedProject.members}" var="member">
-                            <div class="member-chip">
-                                #{member.prenom} #{member.nom}
-                            </div>
-                        </ui:repeat>
+                        <h:panelGroup rendered="#{not empty projectBean.selectedProject.members}">
+                            <ui:repeat value="#{projectBean.selectedProject.members}" var="member">
+                                <div class="member-chip">
+                                    <div class="member-info">
+                                        <span>#{member.prenom} #{member.nom}</span>
+                                        <span class="member-email">(#{member.email})</span>
+                                    </div>
+                                    <h:panelGroup rendered="#{projectBean.isChef(projectBean.selectedProject) and member.id != projectBean.selectedProject.creator.id}">
+                                        <h:form styleClass="remove-member-form">
+                                            <h:commandButton value="✕"
+                                                             action="#{projectBean.removeMember(member.id)}"
+                                                             styleClass="remove-member-btn"
+                                                             onclick="return confirm('Voulez-vous vraiment supprimer ce membre ?');"/>
+                                        </h:form>
+                                    </h:panelGroup>
+                                </div>
+                            </ui:repeat>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{empty projectBean.selectedProject.members}">
+                            <p class="no-members-text">Aucun membre n'est encore ajouté à ce projet.</p>
+                        </h:panelGroup>
                     </div>
                 </section>
 
+                <!-- KANBAN -->
                 <section class="panel-card">
                     <div class="panel-header">
                         <h2>Tableau des tâches</h2>
                     </div>
 
                     <div class="kanban-board">
+
+                        <!-- TODO -->
                         <div class="kanban-column">
                             <div class="kanban-title">À faire</div>
+
                             <ui:repeat value="#{taskBean.getTasksByStatus(projectBean.selectedProject.id, 'TODO')}" var="task">
+
                                 <div class="task-box">
                                     <h3>#{task.titre}</h3>
-                                    <p>#{task.description}</p>
-                                    <p>
-                                        <strong>Assigné à :</strong>
-                                        #{task.assignedStudent != null ? task.assignedStudent.prenom.concat(' ').concat(task.assignedStudent.nom) : 'Non assigné'}
+
+                                    <p class="task-desc">#{task.description}</p>
+
+                                    <p class="task-meta">
+                                        👤 #{task.assignedStudent != null ?
+                            task.assignedStudent.prenom.concat(' ').concat(task.assignedStudent.nom)
+                            : 'Non assigné'}
                                     </p>
-                                    <p>
-                                        <strong>Fin :</strong>
+
+                                    <p class="task-meta">
+                                        📅
                                         <h:outputText value="#{task.dateFin}">
-                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            <f:convertDateTime pattern="dd MMM"/>
                                         </h:outputText>
                                     </p>
 
-                                    <h:form>
-                                        <h:commandButton value="En cours"
+                                    <h:form styleClass="task-action-form">
+                                        <h:commandButton value="→ En cours"
                                                          action="#{taskBean.updateTaskStatusFromProject(task.id, 'IN_PROGRESS', projectBean.selectedProject.id)}"
                                                          styleClass="secondary-action-btn"/>
                                     </h:form>
                                 </div>
+
                             </ui:repeat>
                         </div>
 
+                        <!-- IN PROGRESS -->
                         <div class="kanban-column">
                             <div class="kanban-title">En cours</div>
+
                             <ui:repeat value="#{taskBean.getTasksByStatus(projectBean.selectedProject.id, 'IN_PROGRESS')}" var="task">
+
                                 <div class="task-box">
                                     <h3>#{task.titre}</h3>
-                                    <p>#{task.description}</p>
-                                    <p>
-                                        <strong>Assigné à :</strong>
-                                        #{task.assignedStudent != null ? task.assignedStudent.prenom.concat(' ').concat(task.assignedStudent.nom) : 'Non assigné'}
+
+                                    <p class="task-desc">#{task.description}</p>
+
+                                    <p class="task-meta">
+                                        👤 #{task.assignedStudent != null ?
+                            task.assignedStudent.prenom.concat(' ').concat(task.assignedStudent.nom)
+                            : 'Non assigné'}
                                     </p>
-                                    <p>
-                                        <strong>Fin :</strong>
+
+                                    <p class="task-meta">
+                                        📅
                                         <h:outputText value="#{task.dateFin}">
-                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            <f:convertDateTime pattern="dd MMM"/>
                                         </h:outputText>
                                     </p>
 
                                     <h:form>
-                                        <h:commandButton value="Terminer"
+                                        <h:commandButton value="✓ Terminer"
                                                          action="#{taskBean.updateTaskStatusFromProject(task.id, 'DONE', projectBean.selectedProject.id)}"
                                                          styleClass="secondary-action-btn"/>
                                     </h:form>
                                 </div>
+
                             </ui:repeat>
                         </div>
 
+                        <!-- DONE -->
                         <div class="kanban-column">
                             <div class="kanban-title">Terminé</div>
+
                             <ui:repeat value="#{taskBean.getTasksByStatus(projectBean.selectedProject.id, 'DONE')}" var="task">
-                                <div class="task-box">
+
+                                <div class="task-box done-task">
                                     <h3>#{task.titre}</h3>
-                                    <p>#{task.description}</p>
-                                    <p>
-                                        <strong>Assigné à :</strong>
-                                        #{task.assignedStudent != null ? task.assignedStudent.prenom.concat(' ').concat(task.assignedStudent.nom) : 'Non assigné'}
+
+                                    <p class="task-desc">#{task.description}</p>
+
+                                    <p class="task-meta">
+                                        👤 #{task.assignedStudent != null ?
+                            task.assignedStudent.prenom.concat(' ').concat(task.assignedStudent.nom)
+                            : 'Non assigné'}
                                     </p>
-                                    <p>
-                                        <strong>Fin :</strong>
+
+                                    <p class="task-meta">
+                                        📅
                                         <h:outputText value="#{task.dateFin}">
-                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            <f:convertDateTime pattern="dd MMM"/>
                                         </h:outputText>
                                     </p>
                                 </div>
+
                             </ui:repeat>
                         </div>
+
                     </div>
                 </section>
+
             </main>
         </div>
     </div>
@@ -237,6 +307,40 @@
         </div>
     </div>
 
+    <!-- POPUP POUR AJOUTER UN MEMBRE -->
+    <div id="addMemberPopup" class="custom-modal-overlay">
+        <div class="custom-modal-box">
+            <div class="custom-modal-header">
+                <div>
+                    <h2>Ajouter un membre</h2>
+                    <p>Entrez l'email d'un étudiant pour l'ajouter au projet.</p>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closeAddMemberPopup()">×</button>
+            </div>
+
+            <h:form id="addMemberForm">
+                <div class="form-group">
+                    <label for="memberEmail">Email</label>
+                    <h:inputText id="memberEmail"
+                                 value="#{projectBean.newMemberEmail}"
+                                 styleClass="popup-input"
+                                 placeholder="exemple@email.com"
+                                 required="true"
+                                 requiredMessage="L'email est obligatoire"/>
+                </div>
+
+                <h:messages globalOnly="true" styleClass="form-messages"/>
+
+                <div class="modal-actions">
+                    <button type="button" class="modal-cancel-btn" onclick="closeAddMemberPopup()">Annuler</button>
+                    <h:commandButton value="Ajouter"
+                                     action="#{projectBean.addMemberToSelectedProject}"
+                                     styleClass="modal-create-btn"/>
+                </div>
+            </h:form>
+        </div>
+    </div>
+
     <h:outputScript target="body">
         function openTaskPopup() {
         document.getElementById('taskPopup').style.display = 'flex';
@@ -246,10 +350,22 @@
         document.getElementById('taskPopup').style.display = 'none';
         }
 
+        function openAddMemberPopup() {
+        document.getElementById('addMemberPopup').style.display = 'flex';
+        }
+
+        function closeAddMemberPopup() {
+        document.getElementById('addMemberPopup').style.display = 'none';
+        }
+
         window.addEventListener('click', function(event) {
-        const popup = document.getElementById('taskPopup');
-        if (event.target === popup) {
-        popup.style.display = 'none';
+        const taskPopup = document.getElementById('taskPopup');
+        if (event.target === taskPopup) {
+        taskPopup.style.display = 'none';
+        }
+        const addMemberPopup = document.getElementById('addMemberPopup');
+        if (event.target === addMemberPopup) {
+        addMemberPopup.style.display = 'none';
         }
         });
     </h:outputScript>

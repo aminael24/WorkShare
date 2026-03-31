@@ -5,8 +5,8 @@ import com.example.gestionprojets.entity.Student;
 import com.example.gestionprojets.enums.TaskStatus;
 import com.example.gestionprojets.service.ProjectService;
 import com.example.gestionprojets.service.TaskService;
+import com.example.gestionprojets.util.AuthGuard;
 import jakarta.annotation.PostConstruct;
-import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.faces.view.ViewScoped;
@@ -34,16 +34,10 @@ public class DashboardBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        Student currentUser = authBean.getCurrentUser();
+        AuthGuard.guardPage(authBean);
 
+        Student currentUser = authBean.getCurrentUser();
         if (currentUser == null) {
-            try {
-                FacesContext.getCurrentInstance()
-                        .getExternalContext()
-                        .redirect("index.xhtml");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
             return;
         }
 

@@ -23,7 +23,11 @@
                 <a href="dashboard.xhtml" class="sidebar-link active">Dashboard</a>
                 <a href="projects.xhtml" class="sidebar-link">Projects</a>
                 <a href="tasks.xhtml" class="sidebar-link">Tasks</a>
-                <h:commandLink value="Logout" action="#{authBean.logout}" styleClass="sidebar-link"/>
+                <h:form>
+                    <h:commandButton value="Logout" action="#{authBean.logout}" styleClass="logout-profile-btn" immediate="true">
+                        <f:ajax disabled="true"/>
+                    </h:commandButton>
+                </h:form>
             </nav>
         </aside>
 
@@ -46,8 +50,11 @@
 
                         <h:form>
                             <h:commandButton value="Se déconnecter"
-                                             action="#{authBean.logout}"
-                                             styleClass="logout-profile-btn"/>
+                                             action="#{authBean.logout()}"
+                                             styleClass="logout-profile-btn"
+                                             immediate="true">
+                                <f:ajax disabled="true"/>
+                            </h:commandButton>
                         </h:form>
                     </div>
                 </div>

@@ -26,6 +26,22 @@ public class TaskDao {
         }
     }
 
+    public List<Task> findByProjectAndStatus(Long projectId, TaskStatus status) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery(
+                            "select t from Task t " +
+                                    "left join fetch t.assignedStudent " +
+                                    "left join fetch t.creator " +
+                                    "where t.project.id = :projectId and t.status = :status " +
+                                    "order by t.id desc",
+                            Task.class
+                    )
+                    .setParameter("projectId", projectId)
+                    .setParameter("status", status)
+                    .list();
+        }
+    }
+
     public void update(Task task) {
         Transaction tx = null;
 

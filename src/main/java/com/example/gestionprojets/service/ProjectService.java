@@ -57,22 +57,36 @@ public class ProjectService {
     }
 
     public String addMember(Long projectId, String email, Student currentUser) {
+        // Validation des paramètres
+        if (projectId == null || email == null || email.trim().isEmpty()) {
+            return "INVALID_INPUT";
+        }
+
         Project project = projectDao.findById(projectId);
 
+        // Vérifier si le projet existe
         if (project == null) {
             return "PROJECT_NOT_FOUND";
         }
 
-        if (!project.getCreator().getId().equals(currentUser.getId())) {
+        // Vérifier si l'utilisateur courant est le créateur du projet
+        if (currentUser == null || !project.getCreator().getId().equals(currentUser.getId())) {
             return "NOT_ALLOWED";
         }
 
-        Student student = studentDao.findByEmail(email);
+        // Vérifier si le membre ne s'ajoute pas lui-même
+        if (email.trim().equalsIgnoreCase(currentUser.getEmail())) {
+            return "CANNOT_ADD_SELF";
+        }
+
+        // Chercher l'étudiant par email
+        Student student = studentDao.findByEmail(email.trim());
 
         if (student == null) {
             return "EMAIL_NOT_FOUND";
         }
 
+        // Vérifier si l'étudiant est déjà membre
         boolean alreadyMember = project.getMembers().stream()
                 .anyMatch(m -> m.getId().equals(student.getId()));
 
@@ -80,10 +94,110 @@ public class ProjectService {
             return "ALREADY_MEMBER";
         }
 
+        // Ajouter le membre et sauvegarder
         project.getMembers().add(student);
         projectDao.update(project);
 
         return "SUCCESS";
+    }
+
+    /**
+     * Ajouter plusieurs membres au projet
+     */
+    public String addMultipleMembers(Long projectId, List<String> emails, Student currentUser) {
+        if (projectId == null || emails == null || emails.isEmpty()) {
+            return "INVALID_INPUT";
+        }
+
+        Project project = projectDao.findById(projectId);
+
+        if (project == null) {
+            return "PROJECT_NOT_FOUND";
+        }
+
+        if (currentUser == null || !project.getCreator().getId().equals(currentUser.getId())) {
+            return "NOT_ALLOWED";
+        }
+
+        int addedCount = 0;
+        for (String email : emails) {
+            if (email != null && !email.trim().isEmpty()) {
+                String result = addMember(projectId, email, currentUser);
+                if ("SUCCESS".equals(result)) {
+                    addedCount++;
+                }
+            }
+        }
+
+        if (addedCount == 0) {
+            return "NO_MEMBERS_ADDED";
+        }
+
+        return "SUCCESS_" + addedCount;
+    }
+
+    /**
+     * Supprimer un membre du projet
+     */
+    public String removeMember(Long projectId, Long memberId, Student currentUser) {
+        // Validation des paramètres
+        if (projectId == null || memberId == null) {
+            return "INVALID_INPUT";
+        }
+
+        Project project = projectDao.findById(projectId);
+
+        // Vérifier si le projet existe
+        if (project == null) {
+            return "PROJECT_NOT_FOUND";
+        }
+
+        // Vérifier si l'utilisateur courant est le créateur du projet
+        if (currentUser == null || !project.getCreator().getId().equals(currentUser.getId())) {
+            return "NOT_ALLOWED";
+        }
+
+        // Vérifier si on essaie de supprimer le créateur
+        if (project.getCreator().getId().equals(memberId)) {
+            return "CANNOT_REMOVE_CREATOR";
+        }
+
+        // Chercher le membre
+        Student memberToRemove = project.getMembers().stream()
+                .filter(m -> m.getId().equals(memberId))
+                .findFirst()
+                .orElse(null);
+
+        if (memberToRemove == null) {
+            return "MEMBER_NOT_FOUND";
+        }
+
+        // Supprimer le membre
+        project.getMembers().remove(memberToRemove);
+        projectDao.update(project);
+
+        return "SUCCESS";
+    }
+
+    /**
+     * Vérifier si un étudiant est membre d'un projet
+     */
+    public boolean isMember(Long projectId, Long studentId) {
+        Project project = projectDao.findById(projectId);
+        if (project == null) return false;
+
+        return project.getMembers().stream()
+                .anyMatch(m -> m.getId().equals(studentId));
+    }
+
+    /**
+     * Vérifier si un étudiant est le créateur d'un projet
+     */
+    public boolean isCreator(Long projectId, Long studentId) {
+        Project project = projectDao.findById(projectId);
+        if (project == null) return false;
+
+        return project.getCreator().getId().equals(studentId);
     }
 
 

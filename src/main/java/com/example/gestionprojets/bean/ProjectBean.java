@@ -5,6 +5,7 @@ import com.example.gestionprojets.entity.Student;
 import com.example.gestionprojets.entity.Task;
 import com.example.gestionprojets.service.ProjectService;
 import com.example.gestionprojets.service.TaskService;
+import com.example.gestionprojets.util.AuthGuard;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -41,8 +42,14 @@ public class ProjectBean implements Serializable {
 
     private List<Task> selectedProjectTasks;
 
+    // Variables pour le popup d'ajout de membre
+    private String newMemberEmail;
+    private String addMemberMessage;
+    private FacesMessage.Severity addMemberSeverity;
+
     @PostConstruct
     public void init() {
+        AuthGuard.guardPage(authBean);
         loadProjects();
     }
 
@@ -50,6 +57,16 @@ public class ProjectBean implements Serializable {
         Student currentUser = authBean.getCurrentUser();
         if (currentUser != null) {
             myProjects = projectService.getProjectsOfStudent(currentUser);
+        }
+    }
+
+    public void loadSelectedProject() {
+        if (selectedProjectId != null) {
+            selectedProject = projectService.findById(selectedProjectId);
+
+            if (selectedProject != null) {
+                selectedProjectTasks = taskService.getTasksByProject(selectedProject);
+            }
         }
     }
 
@@ -88,45 +105,121 @@ public class ProjectBean implements Serializable {
         }
     }
 
-    public void selectProject() {
-        if (selectedProjectId != null) {
-            selectedProject = projectService.findById(selectedProjectId);
-            if (selectedProject != null) {
-                selectedProjectTasks = taskService.getTasksByProject(selectedProject);
-            }
-        }
+    public String selectProject(Long id) {
+        return "project-details?faces-redirect=true&projectId=" + id;
+    }
+
+    public void openAddMemberPopup() {
+        // Cette méthode ouvre le popup côté client via JavaScript
+        // Reset du message d'ajout de membre
+        newMemberEmail = null;
+        addMemberMessage = null;
+        addMemberSeverity = null;
     }
 
     public void addMemberToSelectedProject() {
-        String result = projectService.addMember(selectedProjectId, memberEmail, authBean.getCurrentUser());
+        if (selectedProject == null || selectedProject.getId() == null) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Aucun projet sélectionné.", null));
+            return;
+        }
+
+        if (newMemberEmail == null || newMemberEmail.trim().isEmpty()) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Veuillez saisir une adresse email.", null));
+            return;
+        }
+
+        String result = projectService.addMember(selectedProject.getId(), newMemberEmail, authBean.getCurrentUser());
 
         switch (result) {
             case "SUCCESS":
-                selectedProject = projectService.findById(selectedProjectId);
+                // Recharger le projet pour afficher le nouveau membre
+                selectedProject = projectService.findById(selectedProject.getId());
                 loadProjects();
-                memberEmail = null;
+                newMemberEmail = null;
                 FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_INFO, "Membre ajouté avec succès.", null));
+                        new FacesMessage(FacesMessage.SEVERITY_INFO, "✓ Membre ajouté avec succès.", null));
                 break;
 
             case "EMAIL_NOT_FOUND":
                 FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Aucun étudiant avec cet email.", null));
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "❌ Aucun étudiant trouvé avec cet email.", null));
                 break;
 
             case "ALREADY_MEMBER":
                 FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_WARN, "Cet étudiant est déjà membre du projet.", null));
+                        new FacesMessage(FacesMessage.SEVERITY_WARN, "⚠️ Cet étudiant est déjà membre du projet.", null));
                 break;
 
             case "NOT_ALLOWED":
                 FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Seul le chef du projet peut ajouter des membres.", null));
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "❌ Seul le chef du projet peut ajouter des membres.", null));
+                break;
+
+            case "CANNOT_ADD_SELF":
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "❌ Vous ne pouvez pas vous ajouter vous-même.", null));
+                break;
+
+            case "INVALID_INPUT":
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "❌ Données invalides.", null));
                 break;
 
             default:
                 FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur lors de l'ajout du membre.", null));
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "❌ Erreur lors de l'ajout du membre.", null));
+        }
+    }
+
+    public void removeMember(Long memberId) {
+        if (selectedProject == null || selectedProject.getId() == null) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Aucun projet sélectionné.", null));
+            return;
+        }
+
+        if (memberId == null) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Membre invalide.", null));
+            return;
+        }
+
+        String result = projectService.removeMember(selectedProject.getId(), memberId, authBean.getCurrentUser());
+
+        switch (result) {
+            case "SUCCESS":
+                // Recharger le projet
+                selectedProject = projectService.findById(selectedProject.getId());
+                loadProjects();
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_INFO, "✓ Membre supprimé avec succès.", null));
+                break;
+
+            case "NOT_ALLOWED":
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "❌ Seul le chef du projet peut supprimer des membres.", null));
+                break;
+
+            case "CANNOT_REMOVE_CREATOR":
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "❌ Vous ne pouvez pas supprimer le chef du projet.", null));
+                break;
+
+            case "MEMBER_NOT_FOUND":
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "❌ Ce membre n'existe pas dans le projet.", null));
+                break;
+
+            case "INVALID_INPUT":
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "❌ Données invalides.", null));
+                break;
+
+            default:
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "❌ Erreur lors de la suppression du membre.", null));
         }
     }
 
@@ -215,6 +308,10 @@ public class ProjectBean implements Serializable {
         return selectedProject;
     }
 
+    public String openProject(Long id) {
+        return "/projectDetails.xhtml?faces-redirect=true&projectId=" + id;
+    }
+
     public String getTitre() {
         return titre;
     }
@@ -263,5 +360,28 @@ public class ProjectBean implements Serializable {
         return selectedProjectTasks;
     }
 
+    public String getNewMemberEmail() {
+        return newMemberEmail;
+    }
+
+    public void setNewMemberEmail(String newMemberEmail) {
+        this.newMemberEmail = newMemberEmail;
+    }
+
+    public String getAddMemberMessage() {
+        return addMemberMessage;
+    }
+
+    public void setAddMemberMessage(String addMemberMessage) {
+        this.addMemberMessage = addMemberMessage;
+    }
+
+    public FacesMessage.Severity getAddMemberSeverity() {
+        return addMemberSeverity;
+    }
+
+    public void setAddMemberSeverity(FacesMessage.Severity addMemberSeverity) {
+        this.addMemberSeverity = addMemberSeverity;
+    }
 
 }

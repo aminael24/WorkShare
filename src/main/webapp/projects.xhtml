@@ -11,8 +11,8 @@
 </h:head>
 
 <h:body>
-    <div class="app-layout">
 
+    <div class="app-layout">
         <aside class="sidebar">
             <div class="sidebar-brand">
                 <h:graphicImage library="images" name="logo.png" styleClass="sidebar-logo"/>
@@ -23,7 +23,14 @@
                 <a href="dashboard.xhtml" class="sidebar-link">Dashboard</a>
                 <a href="projects.xhtml" class="sidebar-link active">Projects</a>
                 <a href="tasks.xhtml" class="sidebar-link">Tasks</a>
-                <h:commandLink value="Logout" action="#{authBean.logout}" styleClass="sidebar-link"/>
+                <h:form styleClass="sidebar-logout-form">
+                    <h:commandButton value="Logout"
+                                   action="#{authBean.logout()}"
+                                   styleClass="logout-profile-btn"
+                                   immediate="true">
+                        <f:ajax disabled="true"/>
+                    </h:commandButton>
+                </h:form>
             </nav>
         </aside>
 
@@ -46,8 +53,11 @@
 
                         <h:form>
                             <h:commandButton value="Se déconnecter"
-                                             action="#{authBean.logout}"
-                                             styleClass="logout-profile-btn"/>
+                                             action="#{authBean.logout()}"
+                                             styleClass="logout-profile-btn"
+                                             immediate="true">
+                                <f:ajax disabled="true"/>
+                            </h:commandButton>
                         </h:form>
                     </div>
                 </div>
@@ -116,8 +126,10 @@
                                 <div class="project-card-actions">
                                     <h:form>
                                         <h:commandButton value="Voir"
-                                                         action="#{projectBean.openProject(project.id)}"
-                                                         styleClass="secondary-action-btn"/>
+                                                         action="#{projectBean.selectProject(project.id)}"
+                                                         styleClass="secondary-action-btn">
+                                                <f:ajax disabled="true"/>
+                                        </h:commandButton>
 
                                         <h:panelGroup rendered="#{projectBean.isChef(project)}">
                                             <h:commandButton value="Supprimer"

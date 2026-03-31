@@ -1,10 +1,12 @@
 package com.example.gestionprojets.bean;
 
+import jakarta.faces.event.AjaxBehaviorEvent;
 import com.example.gestionprojets.entity.Project;
 import com.example.gestionprojets.entity.Task;
 import com.example.gestionprojets.enums.TaskStatus;
 import com.example.gestionprojets.service.ProjectService;
 import com.example.gestionprojets.service.TaskService;
+import com.example.gestionprojets.util.AuthGuard;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
 import jakarta.faces.application.FacesMessage;
@@ -40,6 +42,7 @@ public class TaskBean implements Serializable {
 
     @PostConstruct
     public void init() {
+        AuthGuard.guardPage(authBean);
         myTasks = taskService.getTasksAssignedTo(authBean.getCurrentUser());
         myProjects = projectService.getProjectsOfStudent(authBean.getCurrentUser());
         statuses = Arrays.asList(TaskStatus.values());
@@ -66,8 +69,47 @@ public class TaskBean implements Serializable {
         }
     }
 
-    public void updateTaskStatus(Long taskId, TaskStatus status) {
-        boolean ok = taskService.updateStatus(taskId, status, authBean.getCurrentUser());
+    public String createTaskAndRedirect(Long projectId) {
+        this.projectId = projectId; // s'assurer que le projectId est bien défini
+
+        Task task = new Task();
+        task.setTitre(titre);
+        task.setDescription(description);
+        task.setDateDebut(dateDebut);
+        task.setDateFin(dateFin);
+        task.setStatus(TaskStatus.TODO);
+
+        boolean ok = taskService.createTask(task, this.projectId, assignedStudentId, authBean.getCurrentUser());
+
+        if (ok) {
+            resetForm();
+            return "project-details?faces-redirect=true&projectId=" + projectId;
+        } else {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Impossible de créer la tâche.", null));
+            return null;
+        }
+    }
+
+    public String updateTaskStatusFromProject(Long taskId, String status, Long projectId) {
+        TaskStatus taskStatus = TaskStatus.valueOf(status);
+        taskService.updateStatus(taskId, taskStatus, authBean.getCurrentUser());
+        return "project-details?faces-redirect=true&projectId=" + projectId;
+    }
+
+    public List<Task> getTasksByStatus(Long projectId, String status) {
+        if (projectId == null) return List.of();
+        TaskStatus taskStatus = TaskStatus.valueOf(status);
+        return taskService.getTasksByProjectAndStatus(projectId, taskStatus);
+    }
+
+    public void onProjectChange(AjaxBehaviorEvent event) {
+        assignedStudentId = null; // reset au changement de projet
+    }
+
+    public void updateTaskStatus(Long taskId, String status) {
+        TaskStatus taskStatus = TaskStatus.valueOf(status);
+        boolean ok = taskService.updateStatus(taskId, taskStatus, authBean.getCurrentUser());
 
         if (ok) {
             myTasks = taskService.getTasksAssignedTo(authBean.getCurrentUser());
