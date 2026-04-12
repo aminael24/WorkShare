@@ -15,7 +15,7 @@
         </property>
 
         <property name="hibernate.connection.url">
-            jdbc:mysql://localhost:3306/gestionprojets
+            jdbc:mysql://localhost:3306/gestion_projets
         </property>
 
         <property name="hibernate.connection.username">
@@ -23,7 +23,7 @@
         </property>
 
         <property name="hibernate.connection.password">
-            1234
+            12345
         </property>
 
         <!-- DIALECT -->

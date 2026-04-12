@@ -4011,3 +4011,50 @@ img {
 .logout-profile-btn:hover {
     background: #caaa90;
 }
+.stat-header {
+    display: flex;
+    align-items: center; /* aligne verticalement */
+    gap: 10px; /* espace entre icône et texte */
+}
+
+.stat-header h3 {
+    margin: 0; /* enlève le décalage du h3 */
+}
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 projets par ligne */
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.project-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.project-card h3 {
+    margin-bottom: 15px;
+    color: #0f2b57;
+}
+
+.project-card p {
+    margin: 8px 0;
+    color: #444;
+}
+
+/* tablette */
+@media (max-width: 1024px) {
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* mobile */
+@media (max-width: 768px) {
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
+}

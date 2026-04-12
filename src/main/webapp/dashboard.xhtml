@@ -8,6 +8,8 @@
     <title>Dashboard - WorkShare</title>
     <h:outputStylesheet library="css" name="style.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 </h:head>
 
 <h:body>
@@ -63,35 +65,55 @@
             <main class="dashboard-content">
 
                 <section class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Mes projets</h3>
+
+                    <div class="stat-card projet-card">
+                        <div class="stat-header">
+                            <i class="fa-solid fa-folder-open stat-icon"></i>
+                            <h3>Mes projets</h3>
+                        </div>
                         <p>#{dashboardBean.totalProjects}</p>
                     </div>
 
                     <div class="stat-card">
-                        <h3>Projets créés</h3>
+                        <div class="stat-header">
+                            <i class="fa-solid fa-diagram-project stat-icon"></i>
+                            <h3>Projets créés</h3>
+                        </div>
                         <p>#{dashboardBean.createdProjects}</p>
                     </div>
 
                     <div class="stat-card">
-                        <h3>Mes tâches</h3>
+                        <div class="stat-header">
+                            <i class="fa-solid fa-list-check stat-icon"></i>
+                            <h3>Mes tâches</h3>
+                        </div>
                         <p>#{dashboardBean.assignedTasks}</p>
                     </div>
 
                     <div class="stat-card">
-                        <h3>TODO</h3>
+                        <div class="stat-header">
+                            <i class="fa-solid fa-clipboard-list stat-icon"></i>
+                            <h3>TODO</h3>
+                        </div>
                         <p>#{dashboardBean.todoTasks}</p>
                     </div>
 
                     <div class="stat-card">
-                        <h3>En cours</h3>
+                        <div class="stat-header">
+                            <i class="fa-solid fa-spinner stat-icon"></i>
+                            <h3>En cours</h3>
+                        </div>
                         <p>#{dashboardBean.inProgressTasks}</p>
                     </div>
 
                     <div class="stat-card">
-                        <h3>Terminées</h3>
+                        <div class="stat-header">
+                            <i class="fa-solid fa-circle-check stat-icon done"></i>
+                            <h3>Terminées</h3>
+                        </div>
                         <p>#{dashboardBean.doneTasks}</p>
                     </div>
+
                 </section>
 
                 <section class="panel-card">

@@ -48,7 +48,7 @@ public class DashboardBean implements Serializable {
         inProgressTasks = taskService.countAssignedTasksByStatus(currentUser, TaskStatus.IN_PROGRESS);
         doneTasks = taskService.countAssignedTasksByStatus(currentUser, TaskStatus.DONE);
 
-        recentProjects = projectService.getProjectsOfStudent(currentUser);
+        recentProjects = projectService.getRecentProjectsOfStudent(currentUser, 6);
     }
 
     public Long getTotalProjects() { return totalProjects; }

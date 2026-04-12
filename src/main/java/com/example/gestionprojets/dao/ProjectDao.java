@@ -109,7 +109,20 @@ public class ProjectDao {
                     .uniqueResult();
         }
     }
-
+    public List<Project> findRecentByStudent(Student student, int limit) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery(
+                            "select distinct p from Project p " +
+                                    "left join fetch p.creator " +
+                                    "left join fetch p.members " +
+                                    "where :student member of p.members " +
+                                    "order by p.id desc",
+                            Project.class
+                    ).setParameter("student", student)
+                    .setMaxResults(limit)
+                    .list();
+        }
+    }
     public List<Project> findAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery(

@@ -41,7 +41,9 @@ public class ProjectService {
     public List<Project> getProjectsCreatedBy(Student student) {
         return projectDao.findCreatedByStudent(student);
     }
-
+    public List<Project> getRecentProjectsOfStudent(Student student, int limit) {
+        return projectDao.findRecentByStudent(student, limit);
+    }
     public Project findById(Long id) {
         return projectDao.findById(id);
     }
