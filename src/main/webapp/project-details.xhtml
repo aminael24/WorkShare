@@ -25,14 +25,15 @@
             </div>
 
             <nav class="sidebar-nav">
-                <a href="dashboard.xhtml" class="sidebar-link">Dashboard</a>
-                <a href="projects.xhtml" class="sidebar-link active">Projects</a>
-                <h:link outcome="tasks.xhtml" styleClass="sidebar-link">
-                    <f:param name="projectId" value="#{projectBean.selectedProject.id}" />
-                    Tasks
-                </h:link>
-                <h:form>
-                    <h:commandButton value="Logout" action="#{authBean.logout}" styleClass="logout-profile-btn" immediate="true">
+                <a href="dashboard.xhtml" class="sidebar-link active">Tableau de bord</a>
+                <a href="projects.xhtml" class="sidebar-link">Projets</a>
+                <a href="tasks.xhtml" class="sidebar-link">Tâches</a>
+
+                <h:form styleClass="sidebar-logout-form">
+                    <h:commandButton value="Se déconnecter"
+                                     action="#{authBean.logout}"
+                                     styleClass="logout-profile-btn"
+                                     immediate="true">
                         <f:ajax disabled="true"/>
                     </h:commandButton>
                 </h:form>
@@ -41,8 +42,26 @@
 
         <div class="main-panel">
             <header class="topbar">
-                <div class="topbar-title">
-                    #{projectBean.selectedProject.titre}
+                <div class="topbar-profile">
+                    <button type="button" class="profile-btn" onclick="toggleProfileMenu()">
+                        <h:graphicImage library="images" name="user.png" styleClass="profile-avatar"/>
+                    </button>
+
+                    <div id="profileMenu" class="profile-dropdown">
+                        <div class="profile-dropdown-header">
+                            <h4>#{authBean.currentUser.prenom} #{authBean.currentUser.nom}</h4>
+                            <p>#{authBean.currentUser.email}</p>
+                        </div>
+
+                        <h:form>
+                            <h:commandButton value="Se déconnecter"
+                                             action="#{authBean.logout()}"
+                                             styleClass="logout-profile-btn"
+                                             immediate="true">
+                                <f:ajax disabled="true"/>
+                            </h:commandButton>
+                        </h:form>
+                    </div>
                 </div>
             </header>
 
@@ -50,7 +69,6 @@
 
                 <h:messages globalOnly="true" styleClass="global-messages"/>
 
-                <!-- HEADER -->
                 <div class="project-details-header">
                     <div>
                         <a href="projects.xhtml" class="back-link">← Retour aux projets</a>
@@ -73,31 +91,27 @@
 
                     <div class="project-header-actions">
                         <button type="button" class="project-add-btn" onclick="openTaskPopup()">
-                            + Nouvelle tâche
+                            + Tache
                         </button>
                     </div>
                 </div>
 
-                <!-- PROGRESS -->
                 <section class="panel-card">
                     <div class="project-progress-row">
                         <span>Avancement global</span>
-                        <span>
-                #{projectBean.getProjectProgress(projectBean.selectedProject)}%
-            </span>
+                        <span>#{projectBean.getProjectProgress(projectBean.selectedProject)}%</span>
                     </div>
 
                     <div class="project-progress-bar">
                         <div class="project-progress-fill"
-                             style="width: #{projectBean.getProjectProgress(projectBean.selectedProject)}%;">
-                        </div>
+                             style="width: #{projectBean.getProjectProgress(projectBean.selectedProject)}%;"></div>
                     </div>
                 </section>
 
-                <!-- MEMBERS -->
                 <section class="panel-card">
                     <div class="panel-header">
                         <h2>Membres (#{projectBean.selectedProject.members.size()})</h2>
+
                         <h:panelGroup rendered="#{projectBean.isChef(projectBean.selectedProject)}">
                             <h:form>
                                 <h:commandButton value="+ Ajouter un membre"
@@ -116,6 +130,7 @@
                                         <span>#{member.prenom} #{member.nom}</span>
                                         <span class="member-email">(#{member.email})</span>
                                     </div>
+
                                     <h:panelGroup rendered="#{projectBean.isChef(projectBean.selectedProject) and member.id != projectBean.selectedProject.creator.id}">
                                         <h:form styleClass="remove-member-form">
                                             <h:commandButton value="✕"
@@ -134,112 +149,112 @@
                     </div>
                 </section>
 
-                <!-- KANBAN -->
                 <section class="panel-card">
                     <div class="panel-header">
-                        <h2>Tableau des tâches</h2>
+                        <h2>Tableau des taches</h2>
                     </div>
 
                     <div class="kanban-board">
 
-                        <!-- TODO -->
+                        <!-- Column 1: A faire -->
                         <div class="kanban-column">
-                            <div class="kanban-title">À faire</div>
-
+                            <div class="kanban-column-header">
+                                <div class="kanban-column-header-left">
+                                    <span class="kanban-dot todo"></span>
+                                    <div class="kanban-title">A faire</div>
+                                </div>
+                                <span class="kanban-count">#{taskBean.getTasksByStatus(projectBean.selectedProject.id, 'TODO').size()}</span>
+                            </div>
                             <ui:repeat value="#{taskBean.getTasksByStatus(projectBean.selectedProject.id, 'TODO')}" var="task">
-
-                                <div class="task-box">
-                                    <h3>#{task.titre}</h3>
-
+                                <div class="task-box todo-task">
+                                    <div class="task-box-header">
+                                        <h3>#{task.titre}</h3>
+                                    </div>
                                     <p class="task-desc">#{task.description}</p>
-
-                                    <p class="task-meta">
-                                        👤 #{task.assignedStudent != null ?
-                            task.assignedStudent.prenom.concat(' ').concat(task.assignedStudent.nom)
-                            : 'Non assigné'}
-                                    </p>
-
-                                    <p class="task-meta">
-                                        📅
-                                        <h:outputText value="#{task.dateFin}">
-                                            <f:convertDateTime pattern="dd MMM"/>
-                                        </h:outputText>
-                                    </p>
-
+                                    <div class="task-box-footer">
+                                        <div class="task-date">
+                                            <h:outputText value="#{task.dateFin}">
+                                                <f:convertDateTime pattern="dd MMM"/>
+                                            </h:outputText>
+                                        </div>
+                                        <span class="task-avatar">
+                        #{task.assignedStudent != null ? task.assignedStudent.prenom.substring(0,1).concat(task.assignedStudent.nom.substring(0,1)) : '??'}
+                    </span>
+                                    </div>
                                     <h:form styleClass="task-action-form">
                                         <h:commandButton value="→ En cours"
                                                          action="#{taskBean.updateTaskStatusFromProject(task.id, 'IN_PROGRESS', projectBean.selectedProject.id)}"
                                                          styleClass="secondary-action-btn"/>
                                     </h:form>
                                 </div>
-
                             </ui:repeat>
                         </div>
 
-                        <!-- IN PROGRESS -->
+                        <!-- Column 2: En cours -->
                         <div class="kanban-column">
-                            <div class="kanban-title">En cours</div>
-
+                            <div class="kanban-column-header">
+                                <div class="kanban-column-header-left">
+                                    <span class="kanban-dot in-progress"></span>
+                                    <div class="kanban-title">En cours</div>
+                                </div>
+                                <span class="kanban-count">#{taskBean.getTasksByStatus(projectBean.selectedProject.id, 'IN_PROGRESS').size()}</span>
+                            </div>
                             <ui:repeat value="#{taskBean.getTasksByStatus(projectBean.selectedProject.id, 'IN_PROGRESS')}" var="task">
-
-                                <div class="task-box">
-                                    <h3>#{task.titre}</h3>
-
+                                <div class="task-box progress-task">
+                                    <div class="task-box-header">
+                                        <h3>#{task.titre}</h3>
+                                    </div>
                                     <p class="task-desc">#{task.description}</p>
-
-                                    <p class="task-meta">
-                                        👤 #{task.assignedStudent != null ?
-                            task.assignedStudent.prenom.concat(' ').concat(task.assignedStudent.nom)
-                            : 'Non assigné'}
-                                    </p>
-
-                                    <p class="task-meta">
-                                        📅
-                                        <h:outputText value="#{task.dateFin}">
-                                            <f:convertDateTime pattern="dd MMM"/>
-                                        </h:outputText>
-                                    </p>
-
+                                    <div class="task-box-footer">
+                                        <div class="task-date">
+                                            <h:outputText value="#{task.dateFin}">
+                                                <f:convertDateTime pattern="dd MMM"/>
+                                            </h:outputText>
+                                        </div>
+                                        <span class="task-avatar">
+                        #{task.assignedStudent != null ? task.assignedStudent.prenom.substring(0,1).concat(task.assignedStudent.nom.substring(0,1)) : '??'}
+                    </span>
+                                    </div>
                                     <h:form>
                                         <h:commandButton value="✓ Terminer"
                                                          action="#{taskBean.updateTaskStatusFromProject(task.id, 'DONE', projectBean.selectedProject.id)}"
                                                          styleClass="secondary-action-btn"/>
                                     </h:form>
                                 </div>
-
                             </ui:repeat>
                         </div>
 
-                        <!-- DONE -->
+                        <!-- Column 3: Terminé -->
                         <div class="kanban-column">
-                            <div class="kanban-title">Terminé</div>
-
-                            <ui:repeat value="#{taskBean.getTasksByStatus(projectBean.selectedProject.id, 'DONE')}" var="task">
-
-                                <div class="task-box done-task">
-                                    <h3>#{task.titre}</h3>
-
-                                    <p class="task-desc">#{task.description}</p>
-
-                                    <p class="task-meta">
-                                        👤 #{task.assignedStudent != null ?
-                            task.assignedStudent.prenom.concat(' ').concat(task.assignedStudent.nom)
-                            : 'Non assigné'}
-                                    </p>
-
-                                    <p class="task-meta">
-                                        📅
-                                        <h:outputText value="#{task.dateFin}">
-                                            <f:convertDateTime pattern="dd MMM"/>
-                                        </h:outputText>
-                                    </p>
+                            <div class="kanban-column-header">
+                                <div class="kanban-column-header-left">
+                                    <span class="kanban-dot done"></span>
+                                    <div class="kanban-title">Terminé</div>
                                 </div>
-
+                                <span class="kanban-count">#{taskBean.getTasksByStatus(projectBean.selectedProject.id, 'DONE').size()}</span>
+                            </div>
+                            <ui:repeat value="#{taskBean.getTasksByStatus(projectBean.selectedProject.id, 'DONE')}" var="task">
+                                <div class="task-box done-task">
+                                    <div class="task-box-header">
+                                        <h3>#{task.titre}</h3>
+                                    </div>
+                                    <p class="task-desc">#{task.description}</p>
+                                    <div class="task-box-footer">
+                                        <div class="task-date">
+                                            <h:outputText value="#{task.dateFin}">
+                                                <f:convertDateTime pattern="dd MMM"/>
+                                            </h:outputText>
+                                        </div>
+                                        <span class="task-avatar">
+                        #{task.assignedStudent != null ? task.assignedStudent.prenom.substring(0,1).concat(task.assignedStudent.nom.substring(0,1)) : '??'}
+                    </span>
+                                    </div>
+                                </div>
                             </ui:repeat>
                         </div>
 
                     </div>
-                </section>
+                </section>asi
 
             </main>
         </div>
@@ -307,7 +322,6 @@
         </div>
     </div>
 
-    <!-- POPUP POUR AJOUTER UN MEMBRE -->
     <div id="addMemberPopup" class="custom-modal-overlay">
         <div class="custom-modal-box">
             <div class="custom-modal-header">
@@ -342,30 +356,57 @@
     </div>
 
     <h:outputScript target="body">
+        function toggleProfileMenu() {
+        const menu = document.getElementById('profileMenu');
+        if (menu) {
+        menu.classList.toggle('show');
+        }
+        }
+
         function openTaskPopup() {
-        document.getElementById('taskPopup').style.display = 'flex';
+        const popup = document.getElementById('taskPopup');
+        if (popup) {
+        popup.style.display = 'flex';
+        }
         }
 
         function closeTaskPopup() {
-        document.getElementById('taskPopup').style.display = 'none';
+        const popup = document.getElementById('taskPopup');
+        if (popup) {
+        popup.style.display = 'none';
+        }
         }
 
         function openAddMemberPopup() {
-        document.getElementById('addMemberPopup').style.display = 'flex';
+        const popup = document.getElementById('addMemberPopup');
+        if (popup) {
+        popup.style.display = 'flex';
+        }
         }
 
         function closeAddMemberPopup() {
-        document.getElementById('addMemberPopup').style.display = 'none';
+        const popup = document.getElementById('addMemberPopup');
+        if (popup) {
+        popup.style.display = 'none';
+        }
         }
 
         window.addEventListener('click', function(event) {
         const taskPopup = document.getElementById('taskPopup');
-        if (event.target === taskPopup) {
+        const addMemberPopup = document.getElementById('addMemberPopup');
+        const menu = document.getElementById('profileMenu');
+        const button = document.querySelector('.profile-btn');
+
+        if (taskPopup &amp;&amp; event.target === taskPopup) {
         taskPopup.style.display = 'none';
         }
-        const addMemberPopup = document.getElementById('addMemberPopup');
-        if (event.target === addMemberPopup) {
+
+        if (addMemberPopup  &amp;&amp; event.target === addMemberPopup) {
         addMemberPopup.style.display = 'none';
+        }
+
+        if (menu &amp;&amp; button &amp;&amp; !button.contains(event.target) &amp;&amp; !menu.contains(event.target)) {
+        menu.classList.remove('show');
         }
         });
     </h:outputScript>

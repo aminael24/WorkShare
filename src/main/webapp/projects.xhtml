@@ -20,14 +20,15 @@
             </div>
 
             <nav class="sidebar-nav">
-                <a href="dashboard.xhtml" class="sidebar-link">Dashboard</a>
-                <a href="projects.xhtml" class="sidebar-link active">Projects</a>
-                <a href="tasks.xhtml" class="sidebar-link">Tasks</a>
+                <a href="dashboard.xhtml" class="sidebar-link ">Tableau de bord</a>
+                <a href="projects.xhtml" class="sidebar-link active">Projets</a>
+                <a href="tasks.xhtml" class="sidebar-link">Tâches</a>
+
                 <h:form styleClass="sidebar-logout-form">
-                    <h:commandButton value="Logout"
-                                   action="#{authBean.logout()}"
-                                   styleClass="logout-profile-btn"
-                                   immediate="true">
+                    <h:commandButton value="Se déconnecter"
+                                     action="#{authBean.logout}"
+                                     styleClass="logout-profile-btn"
+                                     immediate="true">
                         <f:ajax disabled="true"/>
                     </h:commandButton>
                 </h:form>
@@ -36,8 +37,6 @@
 
         <div class="main-panel">
             <header class="topbar">
-
-
                 <div class="topbar-profile">
                     <button type="button" class="profile-btn" onclick="toggleProfileMenu()">
                         <h:graphicImage library="images" name="user.png" styleClass="profile-avatar"/>
@@ -48,8 +47,6 @@
                             <h4>#{authBean.currentUser.prenom} #{authBean.currentUser.nom}</h4>
                             <p>#{authBean.currentUser.email}</p>
                         </div>
-
-
 
                         <h:form>
                             <h:commandButton value="Se déconnecter"
@@ -63,20 +60,16 @@
                 </div>
             </header>
 
-
-
-
             <main class="dashboard-content">
-                <div class="topbar-profile">
-                    <button type="button" class="project-add-btn" onclick="openProjectPopup()">
-                        + Nouveau projet
-                    </button>
-                </div>
                 <h:messages globalOnly="true" styleClass="global-messages"/>
 
                 <section class="projects-section">
                     <div class="projects-header-line">
                         <h2>Mes projets</h2>
+
+                        <button type="button" class="project-add-btn" onclick="openProjectPopup()">
+                            + Nouveau projet
+                        </button>
                     </div>
 
                     <div class="project-cards-grid">
@@ -128,7 +121,7 @@
                                         <h:commandButton value="Voir"
                                                          action="#{projectBean.selectProject(project.id)}"
                                                          styleClass="secondary-action-btn">
-                                                <f:ajax disabled="true"/>
+                                            <f:ajax disabled="true"/>
                                         </h:commandButton>
 
                                         <h:panelGroup rendered="#{projectBean.isChef(project)}">
@@ -138,6 +131,7 @@
                                         </h:panelGroup>
                                     </h:form>
                                 </div>
+
                             </div>
                         </ui:repeat>
                     </div>
@@ -197,18 +191,38 @@
     </div>
 
     <h:outputScript target="body">
+        function toggleProfileMenu() {
+        const menu = document.getElementById('profileMenu');
+        if (menu) {
+        menu.classList.toggle('show');
+        }
+        }
+
         function openProjectPopup() {
-        document.getElementById('projectPopup').style.display = 'flex';
+        const popup = document.getElementById('projectPopup');
+        if (popup) {
+        popup.style.display = 'flex';
+        }
         }
 
         function closeProjectPopup() {
-        document.getElementById('projectPopup').style.display = 'none';
+        const popup = document.getElementById('projectPopup');
+        if (popup) {
+        popup.style.display = 'none';
+        }
         }
 
         window.addEventListener('click', function(event) {
         const popup = document.getElementById('projectPopup');
-        if (event.target === popup) {
+        const menu = document.getElementById('profileMenu');
+        const button = document.querySelector('.profile-btn');
+
+        if (popup &amp;&amp; event.target === popup) {
         popup.style.display = 'none';
+        }
+
+        if (menu &amp;&amp; button &amp;&amp; !button.contains(event.target) &amp;&amp;!menu.contains(event.target)) {
+        menu.classList.remove('show');
         }
         });
     </h:outputScript>

@@ -18,11 +18,16 @@
             </div>
 
             <nav class="sidebar-nav">
-                <a href="dashboard.xhtml" class="sidebar-link">Dashboard</a>
-                <a href="projects.xhtml" class="sidebar-link">Projects</a>
-                <a href="tasks.xhtml" class="sidebar-link active">Tasks</a>
-                <h:form>
-                    <h:commandButton value="Logout" action="#{authBean.logout}" styleClass="logout-profile-btn" immediate="true">
+                <a href="dashboard.xhtml" class="sidebar-link ">Tableau de bord</a>
+                <a href="projects.xhtml" class="sidebar-link">Projets</a>
+                <a href="tasks.xhtml" class="sidebar-link active">Tâches</a>
+
+
+                <h:form styleClass="sidebar-logout-form">
+                    <h:commandButton value="Se déconnecter"
+                                     action="#{authBean.logout}"
+                                     styleClass="logout-profile-btn"
+                                     immediate="true">
                         <f:ajax disabled="true"/>
                     </h:commandButton>
                 </h:form>
@@ -31,7 +36,27 @@
 
         <div class="main-panel">
             <header class="topbar">
-                <div class="topbar-title">Mes tâches</div>
+                <div class="topbar-profile">
+                    <button type="button" class="profile-btn" onclick="toggleProfileMenu()">
+                        <h:graphicImage library="images" name="user.png" styleClass="profile-avatar"/>
+                    </button>
+
+                    <div id="profileMenu" class="profile-dropdown">
+                        <div class="profile-dropdown-header">
+                            <h4>#{authBean.currentUser.prenom} #{authBean.currentUser.nom}</h4>
+                            <p>#{authBean.currentUser.email}</p>
+                        </div>
+
+                        <h:form>
+                            <h:commandButton value="Se déconnecter"
+                                             action="#{authBean.logout()}"
+                                             styleClass="logout-profile-btn"
+                                             immediate="true">
+                                <f:ajax disabled="true"/>
+                            </h:commandButton>
+                        </h:form>
+                    </div>
+                </div>
             </header>
 
             <main class="dashboard-content">
@@ -118,5 +143,21 @@
             </main>
         </div>
     </div>
+    <h:outputScript target="body">
+        function toggleProfileMenu() {
+        const menu = document.getElementById('profileMenu');
+        if (menu) {
+        menu.classList.toggle('show');
+        }
+        }
+
+        window.addEventListener('click', function(event) {
+        const menu = document.getElementById('profileMenu');
+        const button = document.querySelector('.profile-btn');
+        if (menu &amp;&amp; button &amp;&amp; !button.contains(event.target) &amp;&amp; !menu.contains(event.target)) {
+        menu.classList.remove('show');
+        }
+        });
+    </h:outputScript>
 </h:body>
 </html>
