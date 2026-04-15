@@ -151,7 +151,7 @@
 
                 <section class="panel-card">
                     <div class="panel-header">
-                        <h2>Tableau des taches</h2>
+                        <h2>Tableau des tâches</h2>
                     </div>
 
                     <div class="kanban-board">
@@ -177,9 +177,11 @@
                                                 <f:convertDateTime pattern="dd MMM"/>
                                             </h:outputText>
                                         </div>
-                                        <span class="task-avatar">
-                        #{task.assignedStudent != null ? task.assignedStudent.prenom.substring(0,1).concat(task.assignedStudent.nom.substring(0,1)) : '??'}
-                    </span>
+                                        <div class="task-assignee">
+                                            #{task.assignedStudent != null
+                                                    ? task.assignedStudent.prenom.concat(' ').concat(task.assignedStudent.nom)
+                                                    : 'Non assignée'}
+                                        </div>
                                     </div>
                                     <h:form styleClass="task-action-form">
                                         <h:commandButton value="→ En cours"
@@ -211,9 +213,11 @@
                                                 <f:convertDateTime pattern="dd MMM"/>
                                             </h:outputText>
                                         </div>
-                                        <span class="task-avatar">
-                        #{task.assignedStudent != null ? task.assignedStudent.prenom.substring(0,1).concat(task.assignedStudent.nom.substring(0,1)) : '??'}
-                    </span>
+                                        <div class="task-assignee">
+                                            #{task.assignedStudent != null
+                                                    ? task.assignedStudent.prenom.concat(' ').concat(task.assignedStudent.nom)
+                                                    : 'Non assignée'}
+                                        </div>
                                     </div>
                                     <h:form>
                                         <h:commandButton value="✓ Terminer"
@@ -245,9 +249,11 @@
                                                 <f:convertDateTime pattern="dd MMM"/>
                                             </h:outputText>
                                         </div>
-                                        <span class="task-avatar">
-                        #{task.assignedStudent != null ? task.assignedStudent.prenom.substring(0,1).concat(task.assignedStudent.nom.substring(0,1)) : '??'}
-                    </span>
+                                        <div class="task-assignee">
+                                            #{task.assignedStudent != null
+                                                    ? task.assignedStudent.prenom.concat(' ').concat(task.assignedStudent.nom)
+                                                    : 'Non assignée'}
+                                        </div>
                                     </div>
                                 </div>
                             </ui:repeat>

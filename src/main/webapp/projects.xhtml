@@ -3,10 +3,17 @@
       xmlns:h="jakarta.faces.html"
       xmlns:f="jakarta.faces.core"
       xmlns:ui="jakarta.faces.facelets">
-
 <h:head>
     <title>Projects - WorkShare</title>
+
     <h:outputStylesheet library="css" name="style.css"/>
+
+    <link rel="stylesheet"
+          href="https://cdn-uicons.flaticon.com/uicons-bold-rounded/css/uicons-bold-rounded.css"/>
+
+    <link rel="stylesheet"
+          href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css"/>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </h:head>
 
@@ -80,7 +87,9 @@
                                     <h3>#{project.titre}</h3>
 
                                     <h:panelGroup rendered="#{projectBean.isChef(project)}">
-                                        <span class="chef-badge">Chef</span>
+                                      <span class="chef-badge">
+    <i class="fi fi-sr-crown"></i> Chef
+</span>
                                     </h:panelGroup>
                                 </div>
 
@@ -102,13 +111,13 @@
 
                                 <div class="project-card-footer">
                                     <div class="project-card-meta">
-                                        <span>👥 #{project.members.size()}</span>
-                                        <span>
-                                            📅
-                                            <h:outputText value="#{project.dateFin}">
-                                                <f:convertDateTime pattern="dd MMM yyyy"/>
-                                            </h:outputText>
-                                        </span>
+                                        <span><i class="fi fi-sr-users"></i>#{project.members.size()}</span>
+                                        <span class="date-info">
+    <i class="fi fi-br-calendar-day"></i>
+    <h:outputText value="#{project.dateFin}">
+        <f:convertDateTime pattern="dd MMM yyyy"/>
+    </h:outputText>
+</span>
                                     </div>
 
                                     <div class="project-task-summary">

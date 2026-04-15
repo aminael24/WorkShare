@@ -1053,17 +1053,17 @@ img {
 }
 
 .sidebar-logo {
-    width: 48px;
-    height: 48px;
+    width: 80px;
+    height: 80px;
     object-fit: contain;
 }
-
 .sidebar-nav {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-}
+    gap: 100px; /* espace entre les liens */
+    flex: 1;
 
+}
 .sidebar-link {
     display: block;
     padding: 14px 18px;
@@ -1341,12 +1341,12 @@ button.sidebar-link {
 }
 
 .danger-btn {
-    background: #b64141;
+    background: #c58a16;
     color: #ffffff;
 }
 
 .danger-btn:hover {
-    background: #942f2f;
+    background: #7c5a17;
 }
 
 .tag-item {
@@ -2161,10 +2161,177 @@ button.sidebar-link {
 .sidebar-nav {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 30px;
     flex: 1;
 }
 
 .sidebar-logout-form {
     margin-top: auto;
+}
+.date-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px; /* espace entre icône et date */
+}
+.chef-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px; /* espace icône / texte */
+
+    padding: 6px 14px;
+    border-radius: 999px;
+
+    background: #dbeafe; /* bleu clair */
+    color: #1e3a8a; /* bleu foncé */
+
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.chef-badge i {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
+/* ===== Amélioration titre Mes projets ===== */
+.projects-header-line {
+    margin-bottom: 35px;
+}
+
+.projects-header-line h2 {
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--heading-color);
+    margin: 0;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+/* petit soulignement élégant */
+.projects-header-line h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: var(--heading-color);
+    border-radius: 999px;
+}
+
+
+/* ===== Amélioration Avancement ===== */
+.project-progress-block {
+    margin-bottom: 18px;
+}
+
+.project-progress-row {
+    margin-bottom: 10px;
+}
+
+.project-progress-row span:first-child {
+    font-size: 15px;
+    font-weight: 700;
+    color: #374151;
+}
+
+.project-progress-row span:last-child {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--heading-color);
+}
+
+/* barre plus moderne */
+.project-progress-bar {
+    width: 100%;
+    height: 10px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.04);
+}
+
+.project-progress-fill {
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            var(--heading-color),
+            var(--subheading-color)
+    );
+    border-radius: 999px;
+    transition: width 0.6s ease;
+}
+/* ===== Membres : titre + bouton sur la même ligne ===== */
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+}
+
+.panel-header h2 {
+    margin: 0;
+}
+
+
+/* ===== Header colonnes Kanban ===== */
+.kanban-column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 18px;
+}
+
+.kanban-column-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.kanban-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.kanban-count {
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #566773;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+}
+.task-assignee {
+    font-size: 13px;
+    font-weight: 600;
+    color:   #c58a16;
+
+}
+/* ===== Soulignement titres tâches ===== */
+.panel-header h2 {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+.panel-header h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    width: 55px;
+    height: 4px;
+
+    background: var(--heading-color);
+    border-radius: 999px;
 }
