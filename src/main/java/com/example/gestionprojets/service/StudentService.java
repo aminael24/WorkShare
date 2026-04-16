@@ -1,5 +1,6 @@
 package com.example.gestionprojets.service;
 
+import com.example.gestionprojets.dao.ProjectDao;
 import com.example.gestionprojets.dao.StudentDao;
 import com.example.gestionprojets.entity.Student;
 import com.example.gestionprojets.util.PasswordUtil;
@@ -7,6 +8,10 @@ import com.example.gestionprojets.util.PasswordUtil;
 public class StudentService {
 
     private StudentDao studentDao = new StudentDao();
+
+    public StudentService(StudentDao studentDao) {
+        this.studentDao = studentDao;
+    }
 
     public boolean register(Student student) {
 

@@ -10,8 +10,13 @@ import java.util.List;
 
 public class ProjectService {
 
-    private final ProjectDao projectDao = new ProjectDao();
-    private final StudentDao studentDao = new StudentDao();
+    private final ProjectDao projectDao;
+    private final StudentDao studentDao;
+
+    public ProjectService(ProjectDao projectDao, StudentDao studentDao) {
+        this.projectDao = projectDao;
+        this.studentDao = studentDao;
+    }
 
     public void createProject(Project project, Student creator, List<String> memberEmails) {
         project.setCreator(creator);

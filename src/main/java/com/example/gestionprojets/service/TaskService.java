@@ -1,6 +1,7 @@
 package com.example.gestionprojets.service;
 
 import com.example.gestionprojets.dao.ProjectDao;
+import com.example.gestionprojets.dao.StudentDao;
 import com.example.gestionprojets.dao.TaskDao;
 import com.example.gestionprojets.entity.Project;
 import com.example.gestionprojets.entity.Student;
@@ -11,8 +12,13 @@ import java.util.List;
 
 public class TaskService {
 
-    private final TaskDao taskDao = new TaskDao();
-    private final ProjectDao projectDao = new ProjectDao();
+    private final ProjectDao projectDao;
+    private final TaskDao taskDao;
+
+    public TaskService(ProjectDao projectDao, TaskDao taskDao) {
+        this.projectDao = projectDao;
+        this.taskDao = taskDao;
+    }
     public long countByProject(Long projectId) {
         return taskDao.countByProject(projectId);
     }

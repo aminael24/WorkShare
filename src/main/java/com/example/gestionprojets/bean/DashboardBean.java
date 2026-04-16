@@ -20,8 +20,10 @@ public class DashboardBean implements Serializable {
     @Inject
     private AuthBean authBean;
 
-    private final ProjectService projectService = new ProjectService();
-    private final TaskService taskService = new TaskService();
+    @Inject
+    private ProjectService projectService;
+    @Inject
+    private TaskService taskService;
 
     private Long totalProjects;
     private Long createdProjects;

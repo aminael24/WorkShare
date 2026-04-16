@@ -1,10 +1,12 @@
 package com.example.gestionprojets.bean;
 
 import com.example.gestionprojets.entity.Student;
+import com.example.gestionprojets.service.ProjectService;
 import com.example.gestionprojets.service.StudentService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
@@ -23,7 +25,8 @@ public class AuthBean implements Serializable {
 
     private Student currentUser;
 
-    private final StudentService studentService = new StudentService();
+    @Inject
+    private StudentService studentService;
 
     public String login() {
         Student student = studentService.login(loginEmail, loginPassword);

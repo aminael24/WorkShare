@@ -26,8 +26,10 @@ public class TaskBean implements Serializable {
     @Inject
     private AuthBean authBean;
 
-    private final TaskService taskService = new TaskService();
-    private final ProjectService projectService = new ProjectService();
+    @Inject
+    private ProjectService projectService;
+    @Inject
+    private TaskService taskService;
 
     private List<Task> myTasks;
     private List<Project> myProjects;
